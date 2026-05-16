@@ -3595,3 +3595,83 @@ details-disclosure > details {
     transform: translateX(100%) scaleX(0);
   }
 }
+
+/* ============================================
+   DUBAI DUST - Custom Luxury Styling
+   ============================================ */
+
+/* Gold gradient text for headings */
+.section-header h2,
+.banner__heading {
+  background: linear-gradient(135deg, #d4a853, #f5d799, #d4a853);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Announcement bar gold styling */
+.announcement-bar {
+  letter-spacing: 0.1em;
+  font-size: 0.85rem;
+}
+
+/* Luxurious card hover effect */
+.card-wrapper:hover .card {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(212, 168, 83, 0.15);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.card {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Gold border accent on product cards */
+.card-wrapper:hover .card {
+  border-color: rgba(212, 168, 83, 0.3) !important;
+}
+
+/* Button gold glow on hover */
+.button:hover,
+.shopify-challenge__button:hover {
+  box-shadow: 0 4px 20px rgba(212, 168, 83, 0.3);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0e1a;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4a853;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b8860b;
+}
+
+/* Newsletter input styling */
+.newsletter-form__field-wrapper input {
+  background: rgba(255,255,255,0.05) !important;
+  border-color: rgba(212, 168, 83, 0.3) !important;
+  color: #f5f5f5 !important;
+}
+
+/* Image banner overlay with subtle gold gradient */
+.banner::after {
+  background: linear-gradient(to top, rgba(10, 14, 26, 0.8), transparent) !important;
+}
+
+/* Collection card title styling */
+.collection-list .card__heading a,
+.full-unstyled-link {
+  letter-spacing: 0.05em;
+}
+
