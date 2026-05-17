@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "image_banner": {
@@ -29,16 +38,22 @@
           }
         }
       },
-      "block_order": ["heading", "text", "button"],
+      "block_order": [
+        "heading",
+        "text",
+        "button"
+      ],
       "settings": {
+        "image": "shopify://shop_images/dubai-dust-hero.png",
         "image_overlay_opacity": 50,
         "image_height": "large",
+        "image_behavior": "none",
         "desktop_content_position": "middle-center",
-        "show_text_box": false,
         "desktop_content_alignment": "center",
+        "show_text_box": false,
         "color_scheme": "scheme-3",
-        "mobile_content_alignment": "center",
         "stack_images_on_mobile": false,
+        "mobile_content_alignment": "center",
         "show_text_below": false
       }
     },
@@ -76,7 +91,13 @@
           }
         }
       },
-      "block_order": ["col_cosmetics", "col_jewellery", "col_perfume", "col_electronics", "col_accessories"],
+      "block_order": [
+        "col_cosmetics",
+        "col_jewellery",
+        "col_perfume",
+        "col_electronics",
+        "col_accessories"
+      ],
       "settings": {
         "title": "Our Collections",
         "heading_size": "h1",
@@ -93,20 +114,27 @@
     "featured_collection": {
       "type": "featured-collection",
       "settings": {
-        "title": "Best Sellers",
-        "heading_size": "h1",
         "collection": "all",
         "products_to_show": 8,
+        "title": "Best Sellers",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
         "columns_desktop": 4,
-        "color_scheme": "scheme-2",
+        "enable_desktop_slider": false,
+        "full_width": false,
         "show_view_all": true,
         "view_all_style": "solid",
-        "swipe_on_mobile": true,
+        "color_scheme": "scheme-2",
         "image_ratio": "portrait",
+        "image_shape": "default",
         "show_secondary_image": true,
         "show_vendor": false,
         "show_rating": true,
+        "quick_add": "none",
         "columns_mobile": "2",
+        "swipe_on_mobile": true,
         "padding_top": 52,
         "padding_bottom": 52
       }
@@ -142,20 +170,24 @@
           }
         }
       },
-      "block_order": ["col_delivery", "col_payment", "col_curated"],
+      "block_order": [
+        "col_delivery",
+        "col_payment",
+        "col_curated"
+      ],
       "settings": {
         "title": "",
         "heading_size": "h1",
         "image_width": "third",
         "image_ratio": "adapt",
+        "button_label": "",
+        "button_link": "",
         "columns_desktop": 3,
         "column_alignment": "center",
         "background_style": "primary",
-        "button_label": "",
-        "button_link": "",
-        "swipe_on_mobile": false,
         "color_scheme": "scheme-4",
         "columns_mobile": "1",
+        "swipe_on_mobile": false,
         "padding_top": 40,
         "padding_bottom": 40
       }
@@ -177,8 +209,13 @@
           }
         }
       },
-      "block_order": ["heading", "text"],
+      "block_order": [
+        "heading",
+        "text"
+      ],
       "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
         "color_scheme": "scheme-5",
         "full_width": true,
         "padding_top": 60,
