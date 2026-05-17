@@ -1,0 +1,226 @@
+{% comment %}
+  Velvet Rope - Exclusive Access Gate
+  Creates artificial scarcity by showing a luxury "waiting room" overlay
+  on specific premium collections (Jewellery, Perfume, Men's/Ladies' Luxury Watches).
+  Triggers on every 25th visit. Wait shows ~90-110 seconds then grants access.
+{% endcomment %}
+
+{% assign velvet_collections = 'jewellery,perfume,mens-luxury-watches,ladies-luxury-watches' | split: ',' %}
+{% assign is_velvet = false %}
+{% for vc in velvet_collections %}
+  {% if collection.handle == vc %}
+    {% assign is_velvet = true %}
+  {% endif %}
+{% endfor %}
+
+{% if is_velvet %}
+<div id="velvet-rope-overlay" style="display:none;">
+  <div class="velvet-backdrop"></div>
+  <div class="velvet-modal">
+    <div class="velvet-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="1.5">
+        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+      </svg>
+    </div>
+    <h2 class="velvet-title">Exclusive Collection</h2>
+    <p class="velvet-subtitle">{{ collection.title }}</p>
+    <div class="velvet-divider"></div>
+    <p class="velvet-message">
+      You are guest <span id="velvet-guest-number" class="velvet-gold">6</span> waiting to enter.
+      <br>Please allow our <span class="velvet-gold">5 current customers</span> to conclude their shopping.
+    </p>
+    <div class="velvet-timer-wrap">
+      <div class="velvet-timer-label">Estimated wait time</div>
+      <div id="velvet-countdown" class="velvet-countdown">5:00</div>
+      <div class="velvet-progress-track">
+        <div id="velvet-progress-bar" class="velvet-progress-fill"></div>
+      </div>
+    </div>
+    <p class="velvet-footnote">Thank you for your patience. Luxury is worth the wait.</p>
+  </div>
+</div>
+
+<style>
+  .velvet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 7, 15, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 99998;
+  }
+  .velvet-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 99999;
+    background: linear-gradient(145deg, #0d1117 0%, #131920 50%, #0d1117 100%);
+    border: 1px solid rgba(212, 168, 83, 0.3);
+    border-radius: 16px;
+    padding: 48px 40px;
+    max-width: 480px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 0 60px rgba(212, 168, 83, 0.08), 0 0 120px rgba(0,0,0,0.5);
+    animation: velvetFadeIn 0.8s ease;
+  }
+  @keyframes velvetFadeIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+  .velvet-icon {
+    margin-bottom: 20px;
+    animation: velvetPulse 2s ease-in-out infinite;
+  }
+  @keyframes velvetPulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+  .velvet-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: #d4a853;
+    margin: 0 0 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .velvet-subtitle {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    margin: 0 0 24px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+  }
+  .velvet-divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d4a853, transparent);
+    margin: 0 auto 24px;
+  }
+  .velvet-message {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.75);
+    margin: 0 0 32px;
+  }
+  .velvet-gold {
+    color: #d4a853;
+    font-weight: 600;
+  }
+  .velvet-timer-wrap {
+    margin-bottom: 28px;
+  }
+  .velvet-timer-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 8px;
+  }
+  .velvet-countdown {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: #d4a853;
+    margin-bottom: 16px;
+    text-shadow: 0 0 20px rgba(212, 168, 83, 0.3);
+  }
+  .velvet-progress-track {
+    width: 100%;
+    height: 3px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .velvet-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #d4a853, #f0d48a);
+    border-radius: 3px;
+    transition: width 1s linear;
+  }
+  .velvet-footnote {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+    font-style: italic;
+    margin: 0;
+  }
+  @media (max-width: 480px) {
+    .velvet-modal {
+      padding: 36px 24px;
+    }
+    .velvet-title {
+      font-size: 22px;
+    }
+    .velvet-countdown {
+      font-size: 36px;
+    }
+  }
+</style>
+
+<script>
+(function() {
+  var COLLECTION = '{{ collection.handle }}';
+  var TRIGGER_EVERY = 25;
+  var storageKey = 'dd_vr_' + COLLECTION;
+  var overlay = document.getElementById('velvet-rope-overlay');
+  if (!overlay) return;
+
+  // Get visit count from localStorage
+  var visits = parseInt(localStorage.getItem(storageKey) || '0', 10);
+  visits++;
+  localStorage.setItem(storageKey, visits.toString());
+
+  // Show overlay on every Nth visit
+  if (visits % TRIGGER_EVERY !== 0) return;
+
+  // Show the overlay
+  overlay.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+
+  // Randomize guest number (5-9) and wait time display
+  var guestNum = Math.floor(Math.random() * 5) + 5;
+  var guestEl = document.getElementById('velvet-guest-number');
+  if (guestEl) guestEl.textContent = guestNum;
+
+  // Actual wait: 90-110 seconds (displayed as "5:00" initially to create anticipation)
+  var totalWait = Math.floor(Math.random() * 21) + 90; // 90-110 seconds
+  var elapsed = 0;
+
+  // Display countdown — starts at "5:00" but accelerates to finish in totalWait seconds
+  var displayTotal = 300; // 5 minutes displayed
+  var countdownEl = document.getElementById('velvet-countdown');
+  var progressBar = document.getElementById('velvet-progress-bar');
+
+  var timer = setInterval(function() {
+    elapsed++;
+    // Map actual elapsed time to display time (accelerated countdown)
+    var ratio = elapsed / totalWait;
+    var displayRemaining = Math.max(0, Math.ceil(displayTotal * (1 - ratio)));
+    var mins = Math.floor(displayRemaining / 60);
+    var secs = displayRemaining % 60;
+    if (countdownEl) countdownEl.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+    if (progressBar) progressBar.style.width = (ratio * 100) + '%';
+
+    if (elapsed >= totalWait) {
+      clearInterval(timer);
+      if (countdownEl) countdownEl.textContent = '0:00';
+      if (progressBar) progressBar.style.width = '100%';
+      // Fade out
+      overlay.style.transition = 'opacity 0.8s ease';
+      overlay.style.opacity = '0';
+      setTimeout(function() {
+        overlay.style.display = 'none';
+        document.body.style.overflow = '';
+      }, 800);
+    }
+  }, 1000);
+})();
+</script>
+{% endif %}
