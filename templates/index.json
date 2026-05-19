@@ -60,6 +60,42 @@
     "collection_list": {
       "type": "collection-list",
       "blocks": {
+        "featured_collection_hay9V6": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "phone-smartwatch-accessories"
+          }
+        },
+        "featured_collection_rA6Wer": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "small-electronics"
+          }
+        },
+        "featured_collection_yKbPHh": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "perfume"
+          }
+        },
+        "featured_collection_ni8GJJ": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "handbags"
+          }
+        },
+        "featured_collection_iTDcjx": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "jewellery"
+          }
+        },
+        "featured_collection_PMffYW": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "cosmetics"
+          }
+        },
         "featured_collection_DgtYgp": {
           "type": "featured_collection",
           "settings": {
@@ -104,6 +140,12 @@
         }
       },
       "block_order": [
+        "featured_collection_hay9V6",
+        "featured_collection_rA6Wer",
+        "featured_collection_yKbPHh",
+        "featured_collection_ni8GJJ",
+        "featured_collection_iTDcjx",
+        "featured_collection_PMffYW",
         "featured_collection_DgtYgp",
         "featured_collection_pU44bb",
         "col_cosmetics",
