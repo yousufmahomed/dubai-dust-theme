@@ -1,0 +1,296 @@
+{%- comment -%}
+  ============================================================
+  DUBAI DUST — VELVET ROPE FEATURE
+  snippets/velvet-rope.liquid
+  ============================================================
+  Dual-tier exclusivity experience:
+  
+  TIER 1 — Standard Collections
+    • Trigger: Every 25th visit (configurable)
+    • Timer: 90–110 seconds (randomized)
+    • Purpose: Creates artificial scarcity
+  
+  TIER 2 — Ultra-Luxury Collections
+    • Trigger: EVERY visit
+    • Timer: 170–190 seconds (randomized)
+    • Includes VIP badge & R250 deposit notice
+    • Purpose: Ensures only serious buyers access ultra-luxury
+  
+  Visit tracking via localStorage.
+  ============================================================
+{%- endcomment -%}
+
+{%- comment -%} Determine if we're on a collection page {%- endcomment -%}
+{%- if template.name == 'collection' -%}
+
+  {%- comment -%} Determine collection tier via tags {%- endcomment -%}
+  {%- assign is_ultra_luxury = false -%}
+  {%- assign is_standard = false -%}
+  {%- assign collection_handle = collection.handle -%}
+
+  {%- for tag in collection.tags -%}
+    {%- if tag == 'ultra-luxury-collection' or tag == 'ultra-luxury' -%}
+      {%- assign is_ultra_luxury = true -%}
+    {%- endif -%}
+    {%- if tag == 'standard-collection' or tag == 'standard' -%}
+      {%- assign is_standard = true -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- comment -%} Also detect by handle prefix {%- endcomment -%}
+  {%- if collection_handle contains 'ultra-luxury' -%}
+    {%- assign is_ultra_luxury = true -%}
+  {%- endif -%}
+
+  {%- comment -%} Default to standard if not explicitly ultra-luxury {%- endcomment -%}
+  {%- unless is_ultra_luxury -%}
+    {%- assign is_standard = true -%}
+  {%- endunless -%}
+
+  {%- comment -%} Get timer settings from theme config {%- endcomment -%}
+  {%- assign visit_threshold = settings.velvet_rope_standard_visit_threshold | default: 25 -%}
+  {%- assign standard_min = settings.velvet_rope_standard_min_seconds | default: 90 -%}
+  {%- assign standard_max = settings.velvet_rope_standard_max_seconds | default: 110 -%}
+  {%- assign ultra_min = settings.velvet_rope_ultra_min_seconds | default: 170 -%}
+  {%- assign ultra_max = settings.velvet_rope_ultra_max_seconds | default: 190 -%}
+
+  {%- comment -%} Render the overlay {%- endcomment -%}
+  <div id="velvet-rope-overlay" class="velvet-rope-overlay" role="dialog" aria-modal="true" aria-label="Exclusive Access">
+    <div class="velvet-rope-modal">
+      <button class="velvet-rope__close" id="velvet-rope-close" aria-label="Close">&times;</button>
+
+      <div class="velvet-rope-content">
+        {%- if is_ultra_luxury -%}
+          {%- comment -%} ULTRA-LUXURY TIER {%- endcomment -%}
+          <span class="velvet-rope__icon">👑</span>
+          <div class="velvet-rope__vip-badge">
+            <span>✦</span> VIP Ultra-Luxury Access <span>✦</span>
+          </div>
+          <h2 class="velvet-rope__title">
+            <span class="gold-gradient">Exclusive Collection</span>
+          </h2>
+          <p class="velvet-rope__subtitle">Ultra-Luxury Experience Loading</p>
+          <p class="velvet-rope__message">
+            Welcome to the Dubai Dust Ultra-Luxury Collection. Only the most discerning 
+            clientele gain access to our curated selection of the world's finest products.
+            <br><br>
+            <strong style="color: var(--color-gold);">VIP Viewing Deposit of R250 required</strong>
+            <br>
+            <small style="color: var(--color-text-muted);">(Fully refundable &amp; deducted from your purchase)</small>
+          </p>
+        {%- else -%}
+          {%- comment -%} STANDARD TIER {%- endcomment -%}
+          <span class="velvet-rope__icon">✨</span>
+          <h2 class="velvet-rope__title">
+            <span class="gold-gradient">Preparing Your Experience</span>
+          </h2>
+          <p class="velvet-rope__subtitle">Luxury Within Reach</p>
+          <p class="velvet-rope__message">
+            Welcome to {{ collection.title }}. We're preparing an exclusive 
+            shopping experience just for you. Please wait while we curate 
+            the collection.
+          </p>
+        {%- endif -%}
+
+        {%- comment -%} Countdown Timer {%- endcomment -%}
+        <div class="countdown-timer" id="velvet-countdown">
+          <div class="countdown-unit">
+            <div class="countdown-value" id="vr-minutes">00</div>
+            <span class="countdown-label">Minutes</span>
+          </div>
+          <span class="countdown-separator">:</span>
+          <div class="countdown-unit">
+            <div class="countdown-value" id="vr-seconds">00</div>
+            <span class="countdown-label">Seconds</span>
+          </div>
+        </div>
+
+        {%- comment -%} Progress Bar {%- endcomment -%}
+        <div class="velvet-rope__progress">
+          <div class="velvet-rope__progress-bar" id="vr-progress" style="width: 0%;"></div>
+        </div>
+
+        <p style="font-size: 0.75rem; color: var(--color-text-muted); opacity: 0.6;">
+          {%- if is_ultra_luxury -%}
+            This exclusive access experience ensures quality service for our VIP clientele.
+          {%- else -%}
+            Thank you for your patience. The best things in life are worth waiting for.
+          {%- endif -%}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Velvet Rope Logic {%- endcomment -%}
+  <script>
+  (function() {
+    'use strict';
+
+    const CONFIG = {
+      collectionHandle: {{ collection_handle | json }},
+      isUltraLuxury: {{ is_ultra_luxury | json }},
+      isStandard: {{ is_standard | json }},
+      visitThreshold: {{ visit_threshold }},
+      standardMinSeconds: {{ standard_min }},
+      standardMaxSeconds: {{ standard_max }},
+      ultraMinSeconds: {{ ultra_min }},
+      ultraMaxSeconds: {{ ultra_max }}
+    };
+
+    const STORAGE_KEY = 'dd_velvet_rope_visits';
+    const UNLOCKED_KEY = 'dd_velvet_rope_unlocked';
+
+    // --- Helper Functions ---
+
+    function getVisitCounts() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      } catch (e) { return {}; }
+    }
+
+    function setVisitCounts(counts) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(counts));
+      } catch (e) {}
+    }
+
+    function getUnlocked() {
+      try {
+        const data = JSON.parse(localStorage.getItem(UNLOCKED_KEY) || '{}');
+        const handle = CONFIG.collectionHandle;
+        // Unlock expires after 30 minutes (session-based)
+        if (data[handle] && (Date.now() - data[handle]) < 30 * 60 * 1000) {
+          return true;
+        }
+        return false;
+      } catch (e) { return false; }
+    }
+
+    function setUnlocked() {
+      try {
+        const data = JSON.parse(localStorage.getItem(UNLOCKED_KEY) || '{}');
+        data[CONFIG.collectionHandle] = Date.now();
+        localStorage.setItem(UNLOCKED_KEY, JSON.stringify(data));
+      } catch (e) {}
+    }
+
+    function getRandomDuration(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // --- Determine if timer should show ---
+
+    function shouldShowTimer() {
+      // If already unlocked in this session, skip
+      if (getUnlocked()) return false;
+
+      const counts = getVisitCounts();
+      const handle = CONFIG.collectionHandle;
+      counts[handle] = (counts[handle] || 0) + 1;
+      setVisitCounts(counts);
+
+      if (CONFIG.isUltraLuxury) {
+        // Ultra-luxury: show on EVERY visit
+        return true;
+      }
+
+      if (CONFIG.isStandard) {
+        // Standard: show every Nth visit
+        return (counts[handle] % CONFIG.visitThreshold === 0);
+      }
+
+      return false;
+    }
+
+    // --- Timer Logic ---
+
+    function startCountdown(totalSeconds) {
+      const overlay = document.getElementById('velvet-rope-overlay');
+      const minutesEl = document.getElementById('vr-minutes');
+      const secondsEl = document.getElementById('vr-seconds');
+      const progressBar = document.getElementById('vr-progress');
+      const closeBtn = document.getElementById('velvet-rope-close');
+
+      if (!overlay) return;
+
+      // Show overlay
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+
+      let remaining = totalSeconds;
+
+      function updateDisplay() {
+        const mins = Math.floor(remaining / 60);
+        const secs = remaining % 60;
+        if (minutesEl) minutesEl.textContent = String(mins).padStart(2, '0');
+        if (secondsEl) secondsEl.textContent = String(secs).padStart(2, '0');
+
+        const progress = ((totalSeconds - remaining) / totalSeconds) * 100;
+        if (progressBar) progressBar.style.width = progress + '%';
+      }
+
+      updateDisplay();
+
+      const interval = setInterval(function() {
+        remaining--;
+        updateDisplay();
+
+        if (remaining <= 0) {
+          clearInterval(interval);
+          // Timer complete — unlock collection
+          closeOverlay();
+          setUnlocked();
+
+          if (window.DubaiDust && window.DubaiDust.showToast) {
+            window.DubaiDust.showToast('✨', 'Collection unlocked! Enjoy your exclusive shopping experience.');
+          }
+        }
+      }, 1000);
+
+      // Close / dismiss functionality
+      // For standard: allow close after 50% of time
+      // For ultra-luxury: must wait full timer
+      if (closeBtn) {
+        if (CONFIG.isUltraLuxury) {
+          closeBtn.style.display = 'none';
+        } else {
+          closeBtn.style.display = 'none';
+          // Show close after 50% of timer
+          setTimeout(function() {
+            closeBtn.style.display = 'flex';
+          }, (totalSeconds * 500)); // 50% of total in ms
+        }
+
+        closeBtn.addEventListener('click', function() {
+          clearInterval(interval);
+          closeOverlay();
+          setUnlocked();
+        });
+      }
+
+      function closeOverlay() {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    // --- Initialize ---
+
+    if (shouldShowTimer()) {
+      let duration;
+      if (CONFIG.isUltraLuxury) {
+        duration = getRandomDuration(CONFIG.ultraMinSeconds, CONFIG.ultraMaxSeconds);
+      } else {
+        duration = getRandomDuration(CONFIG.standardMinSeconds, CONFIG.standardMaxSeconds);
+      }
+
+      // Small delay for page to settle
+      setTimeout(function() {
+        startCountdown(duration);
+      }, 500);
+    }
+
+  })();
+  </script>
+
+{%- endif -%}

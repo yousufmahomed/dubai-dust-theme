@@ -1,0 +1,90 @@
+{%- comment -%}
+  Hero Section — Homepage banner
+{%- endcomment -%}
+
+<section class="hero-section">
+  <div class="arabian-pattern"></div>
+
+  <div class="hero-content">
+    <p class="tagline">{{ section.settings.tagline | default: '✦ Welcome to Dubai Dust ✦' }}</p>
+
+    <h1>
+      <span class="gold-gradient">{{ section.settings.heading | default: 'Luxury Within Reach' }}</span>
+    </h1>
+
+    <p class="hero-description">
+      {{ section.settings.description | default: 'Discover curated collections of premium cosmetics, jewellery, perfume, watches, and more — delivered across South Africa. Experience the essence of Arabian luxury without the premium price tag.' }}
+    </p>
+
+    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+      {%- if section.settings.cta_text != blank -%}
+        <a href="{{ section.settings.cta_url | default: '/collections' }}" class="btn btn-primary btn-lg">
+          {{ section.settings.cta_text }}
+        </a>
+      {%- endif -%}
+      {%- if section.settings.cta_secondary_text != blank -%}
+        <a href="{{ section.settings.cta_secondary_url | default: '/collections/ultra-luxury' }}" class="btn btn-vip btn-lg">
+          {{ section.settings.cta_secondary_text }}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero Banner",
+  "settings": [
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "✦ Welcome to Dubai Dust ✦"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Luxury Within Reach"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Discover curated collections of premium cosmetics, jewellery, perfume, watches, and more — delivered across South Africa. Experience the essence of Arabian luxury without the premium price tag."
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Primary CTA Text",
+      "default": "Shop Collections"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Primary CTA URL"
+    },
+    {
+      "type": "text",
+      "id": "cta_secondary_text",
+      "label": "Secondary CTA Text",
+      "default": "✦ VIP Ultra-Luxury"
+    },
+    {
+      "type": "url",
+      "id": "cta_secondary_url",
+      "label": "Secondary CTA URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Background Image"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Banner"
+    }
+  ]
+}
+{% endschema %}

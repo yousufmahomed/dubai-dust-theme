@@ -1,0 +1,54 @@
+{%- comment -%}
+  Cart Drawer — slides in from the right
+{%- endcomment -%}
+
+<div class="cart-drawer-overlay" aria-hidden="true"></div>
+
+<aside class="cart-drawer" aria-label="Shopping Cart">
+  <div class="cart-drawer__header">
+    <h2 class="cart-drawer__title">Your Cart</h2>
+    <button class="cart-drawer__close" aria-label="Close cart">&times;</button>
+  </div>
+
+  <div class="cart-drawer__items">
+    {%- if cart.item_count > 0 -%}
+      {%- for item in cart.items -%}
+        <div class="cart-item" data-line="{{ forloop.index }}">
+          <div class="cart-item__image">
+            {%- if item.image -%}
+              <img src="{{ item.image | image_url: width: 144 }}" alt="{{ item.title | escape }}" loading="lazy">
+            {%- endif -%}
+          </div>
+          <div class="cart-item__details">
+            <p class="cart-item__title">{{ item.product.title }}</p>
+            {%- if item.variant.title != 'Default Title' -%}
+              <p style="font-size: 0.75rem; color: var(--color-text-muted);">{{ item.variant.title }}</p>
+            {%- endif -%}
+            <p class="cart-item__price">{{ item.final_line_price | money }}</p>
+            <p style="font-size: 0.75rem; color: var(--color-text-muted);">Qty: {{ item.quantity }}</p>
+          </div>
+        </div>
+      {%- endfor -%}
+    {%- else -%}
+      <div class="cart-drawer__empty">
+        <p style="font-size: 2rem; margin-bottom: 12px;">✦</p>
+        <p>Your cart is empty</p>
+        <p style="font-size: 0.8125rem; margin-top: 8px;">Discover luxury within reach</p>
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- if cart.item_count > 0 -%}
+    <div class="cart-drawer__footer">
+      <div class="cart-drawer__total">
+        <span>Subtotal</span>
+        <span class="total-amount">{{ cart.total_price | money }}</span>
+      </div>
+      <p style="font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 16px;">
+        Shipping &amp; taxes calculated at checkout
+      </p>
+      <a href="/checkout" class="btn btn-primary" style="width: 100%;">Proceed to Checkout</a>
+      <a href="/cart" style="display: block; text-align: center; margin-top: 12px; font-size: 0.8125rem; color: var(--color-text-muted);">View Full Cart</a>
+    </div>
+  {%- endif -%}
+</aside>

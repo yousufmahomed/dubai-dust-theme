@@ -1,0 +1,271 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Dubai Dust",
+    "theme_version": "1.0.0",
+    "theme_author": "Dubai Dust",
+    "theme_documentation_url": "https://dubaidust.org",
+    "theme_support_url": "mailto:support@dubaidust.org"
+  },
+  {
+    "name": "Brand Colors",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Primary Colors"
+      },
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Background Dark",
+        "default": "#0a0e1a",
+        "info": "Primary dark background for the entire theme"
+      },
+      {
+        "type": "color",
+        "id": "color_gold",
+        "label": "Gold Accent",
+        "default": "#d4a853",
+        "info": "Gold accent for CTAs, highlights, and text"
+      },
+      {
+        "type": "color",
+        "id": "color_gold_alt",
+        "label": "Gold Alternate",
+        "default": "#D4AF37",
+        "info": "Secondary gold for gradients"
+      },
+      {
+        "type": "color",
+        "id": "color_deep_purple",
+        "label": "Deep Purple",
+        "default": "#4A148C",
+        "info": "Accent for curtain animations and secondary elements"
+      },
+      {
+        "type": "color",
+        "id": "color_royal_blue",
+        "label": "Royal Blue",
+        "default": "#1565C0",
+        "info": "Accent for curtain animations and secondary elements"
+      },
+      {
+        "type": "color",
+        "id": "color_text_primary",
+        "label": "Primary Text",
+        "default": "#f5f0e8",
+        "info": "Primary text color on dark backgrounds"
+      },
+      {
+        "type": "color",
+        "id": "color_text_muted",
+        "label": "Muted Text",
+        "default": "#a0998c",
+        "info": "Muted text color for secondary information"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "font_picker",
+        "id": "font_heading",
+        "label": "Heading Font",
+        "default": "playfair_display_n4",
+        "info": "Used for all headings (H1-H6)"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_body",
+        "label": "Body Font",
+        "default": "montserrat_n4",
+        "info": "Used for body text and UI elements"
+      }
+    ]
+  },
+  {
+    "name": "Brand Settings",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Brand Identity"
+      },
+      {
+        "type": "text",
+        "id": "brand_name",
+        "label": "Brand Name",
+        "default": "Dubai Dust"
+      },
+      {
+        "type": "text",
+        "id": "brand_tagline",
+        "label": "Tagline",
+        "default": "Luxury Within Reach"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon"
+      }
+    ]
+  },
+  {
+    "name": "Velvet Rope Settings",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Velvet Rope Exclusivity Feature"
+      },
+      {
+        "type": "checkbox",
+        "id": "velvet_rope_enabled",
+        "label": "Enable Velvet Rope",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "velvet_rope_standard_visit_threshold",
+        "label": "Standard Collection Visit Threshold",
+        "min": 5,
+        "max": 50,
+        "step": 5,
+        "default": 25,
+        "info": "Timer appears on every Nth visit for standard collections"
+      },
+      {
+        "type": "range",
+        "id": "velvet_rope_standard_min_seconds",
+        "label": "Standard Timer Min (seconds)",
+        "min": 60,
+        "max": 180,
+        "step": 10,
+        "default": 90
+      },
+      {
+        "type": "range",
+        "id": "velvet_rope_standard_max_seconds",
+        "label": "Standard Timer Max (seconds)",
+        "min": 60,
+        "max": 180,
+        "step": 10,
+        "default": 110
+      },
+      {
+        "type": "range",
+        "id": "velvet_rope_ultra_min_seconds",
+        "label": "Ultra-Luxury Timer Min (seconds)",
+        "min": 120,
+        "max": 300,
+        "step": 10,
+        "default": 170
+      },
+      {
+        "type": "range",
+        "id": "velvet_rope_ultra_max_seconds",
+        "label": "Ultra-Luxury Timer Max (seconds)",
+        "min": 120,
+        "max": 300,
+        "step": 10,
+        "default": 190
+      }
+    ]
+  },
+  {
+    "name": "VIP Deposit",
+    "settings": [
+      {
+        "type": "header",
+        "content": "VIP Viewing Deposit"
+      },
+      {
+        "type": "checkbox",
+        "id": "vip_deposit_enabled",
+        "label": "Enable VIP Deposit Gate",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "vip_deposit_amount",
+        "label": "Deposit Amount (ZAR)",
+        "default": "250"
+      },
+      {
+        "type": "text",
+        "id": "vip_deposit_product_handle",
+        "label": "Deposit Product Handle",
+        "default": "vip-viewing-deposit",
+        "info": "Handle of the hidden product used for the R250 deposit"
+      }
+    ]
+  },
+  {
+    "name": "Checkout",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Checkout Customization"
+      },
+      {
+        "type": "checkbox",
+        "id": "ultra_luxury_discount_enabled",
+        "label": "Enable Ultra-Luxury Surprise Discount",
+        "default": true,
+        "info": "Automatically applies 7% discount on ultra-luxury items at checkout"
+      },
+      {
+        "type": "range",
+        "id": "ultra_luxury_discount_percent",
+        "label": "Discount Percentage",
+        "min": 1,
+        "max": 20,
+        "step": 1,
+        "default": 7
+      },
+      {
+        "type": "checkbox",
+        "id": "gift_message_enabled",
+        "label": "Enable Gift Message Option",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Social Media",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Social Media Links"
+      },
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram URL",
+        "default": "https://instagram.com/dubaidust"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok",
+        "label": "TikTok URL",
+        "default": "https://tiktok.com/@dubaidust"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook",
+        "label": "Facebook URL",
+        "default": "https://facebook.com/dubaidust"
+      },
+      {
+        "type": "text",
+        "id": "social_whatsapp",
+        "label": "WhatsApp Number",
+        "default": "+27000000000"
+      }
+    ]
+  }
+]

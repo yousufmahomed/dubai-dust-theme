@@ -1,0 +1,98 @@
+{%- comment -%}
+  Site Header / Navigation
+{%- endcomment -%}
+
+<header class="site-header" role="banner">
+  <div class="site-header__inner">
+    {%- comment -%} Logo {%- endcomment -%}
+    <div class="site-header__logo">
+      <a href="/">
+        {%- if settings.logo -%}
+          <img src="{{ settings.logo | image_url: width: 200 }}" alt="{{ shop.name }}" width="200" height="auto">
+        {%- else -%}
+          <span class="gold-gradient">{{ settings.brand_name | default: shop.name }}</span>
+          <span class="logo-sub">{{ settings.brand_tagline | default: 'Luxury Within Reach' }}</span>
+        {%- endif -%}
+      </a>
+    </div>
+
+    {%- comment -%} Main Navigation {%- endcomment -%}
+    <nav class="site-nav" role="navigation" aria-label="Main Navigation">
+      <button class="mobile-close-btn" aria-label="Close menu">&times;</button>
+      {%- for link in section.settings.menu.links -%}
+        <a
+          href="{{ link.url }}"
+          class="site-nav__link{% if link.active %} active{% endif %}"
+        >
+          {{ link.title }}
+        </a>
+      {%- endfor -%}
+
+      {%- comment -%} Default links if no menu assigned {%- endcomment -%}
+      {%- if section.settings.menu == blank -%}
+        <a href="/collections" class="site-nav__link">Collections</a>
+        <a href="/collections/cosmetics" class="site-nav__link">Cosmetics</a>
+        <a href="/collections/jewellery" class="site-nav__link">Jewellery</a>
+        <a href="/collections/perfume" class="site-nav__link">Perfume</a>
+        <a href="/collections/handbags" class="site-nav__link">Handbags</a>
+        <a href="/collections/watches" class="site-nav__link">Watches</a>
+        <a href="/pages/about" class="site-nav__link">About</a>
+        <a href="/pages/contact" class="site-nav__link">Contact</a>
+      {%- endif -%}
+    </nav>
+
+    {%- comment -%} Header Actions {%- endcomment -%}
+    <div class="site-header__actions">
+      {%- comment -%} Search {%- endcomment -%}
+      <a href="/search" class="header-icon" aria-label="Search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </a>
+
+      {%- comment -%} Account {%- endcomment -%}
+      <a href="/account" class="header-icon" aria-label="Account">
+        <svg xmlns="https://img.freepik.com/premium-vector/gray-circular-user-icon-with-head-shoulders-silhouette-represents-generic-user-profile_213497-4987.jpg" viewBox="0 0 24 24">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </a>
+
+      {%- comment -%} Cart {%- endcomment -%}
+      <button class="header-icon" data-cart-toggle aria-label="Open cart">
+        <svg xmlns="https://i.etsystatic.com/23410646/r/il/091d51/3095713702/il_570xN.3095713702_ruid.jpg" viewBox="0 0 24 24">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span class="cart-count" {% if cart.item_count == 0 %}style="display:none"{% endif %}>
+          {{ cart.item_count }}
+        </span>
+      </button>
+
+      {%- comment -%} Mobile Menu Toggle {%- endcomment -%}
+      <button class="mobile-menu-toggle" aria-label="Open menu">
+        <svg xmlns="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Hamburger_icon.svg/250px-Hamburger_icon.svg.png" viewBox="0 0 24 24">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Navigation Menu",
+      "default": "main-menu"
+    }
+  ]
+}
+{% endschema %}

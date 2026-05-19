@@ -1,0 +1,57 @@
+{
+  "general": {
+    "accessibility": {
+      "skip_to_content": "Skip to content"
+    },
+    "meta": {
+      "tags": "Tagged \"{{ tags }}\"",
+      "page": "Page {{ page }}"
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to Cart",
+      "sold_out": "Sold Out",
+      "unavailable": "Unavailable",
+      "quantity": "Quantity",
+      "description": "Description"
+    }
+  },
+  "collections": {
+    "general": {
+      "no_matches": "No products match your search"
+    }
+  },
+  "cart": {
+    "general": {
+      "title": "Your Cart",
+      "empty": "Your cart is empty",
+      "subtotal": "Subtotal",
+      "checkout": "Proceed to Checkout",
+      "continue_shopping": "Continue Shopping"
+    }
+  },
+  "customer": {
+    "login": {
+      "title": "Welcome Back",
+      "email": "Email",
+      "password": "Password",
+      "sign_in": "Sign In",
+      "forgot_password": "Forgot password?"
+    },
+    "register": {
+      "title": "Join Dubai Dust",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create Account"
+    },
+    "account": {
+      "title": "My Account"
+    },
+    "orders": {
+      "title": "Order History"
+    }
+  }
+}

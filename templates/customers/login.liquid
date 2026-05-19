@@ -1,0 +1,40 @@
+{%- comment -%} Customer Login Template {%- endcomment -%}
+
+<div class="page-template">
+  <div class="container" style="max-width: 480px;">
+    <h1 class="text-center"><span class="gold-gradient">Welcome Back</span></h1>
+    <p class="text-center text-muted mb-4">Sign in to your Dubai Dust account</p>
+
+    <div class="glass-card">
+      {% form 'customer_login' %}
+        {%- if form.errors -%}
+          <div style="background: rgba(244,67,54,0.1); border: 1px solid rgba(244,67,54,0.3); padding: 12px; border-radius: 6px; margin-bottom: 20px;">
+            <p style="color: #f44336; font-size: 0.8125rem;">{{ form.errors | default_errors }}</p>
+          </div>
+        {%- endif -%}
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 0.8125rem; font-weight: 500; margin-bottom: 8px;">Email</label>
+          <input type="email" name="customer[email]" autocomplete="email"
+            style="width: 100%; padding: 14px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(212,168,83,0.15); border-radius: 6px; color: var(--color-text);"
+            placeholder="your@email.com">
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <label style="display: block; font-size: 0.8125rem; font-weight: 500; margin-bottom: 8px;">Password</label>
+          <input type="password" name="customer[password]" autocomplete="current-password"
+            style="width: 100%; padding: 14px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(212,168,83,0.15); border-radius: 6px; color: var(--color-text);"
+            placeholder="••••••••">
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+
+        <div class="text-center mt-3">
+          <a href="/account/register" style="font-size: 0.8125rem;">Create an account</a>
+          <span style="margin: 0 8px; color: var(--color-text-muted);">|</span>
+          <a href="#recover" style="font-size: 0.8125rem;">Forgot password?</a>
+        </div>
+      {% endform %}
+    </div>
+  </div>
+</div>

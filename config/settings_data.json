@@ -1,0 +1,44 @@
+{
+  "current": {
+    "color_background": "#0a0e1a",
+    "color_gold": "#d4a853",
+    "color_gold_alt": "#D4AF37",
+    "color_deep_purple": "#4A148C",
+    "color_royal_blue": "#1565C0",
+    "color_text_primary": "#f5f0e8",
+    "color_text_muted": "#a0998c",
+    "brand_name": "Dubai Dust",
+    "brand_tagline": "Luxury Within Reach",
+    "velvet_rope_enabled": true,
+    "velvet_rope_standard_visit_threshold": 25,
+    "velvet_rope_standard_min_seconds": 90,
+    "velvet_rope_standard_max_seconds": 110,
+    "velvet_rope_ultra_min_seconds": 170,
+    "velvet_rope_ultra_max_seconds": 190,
+    "vip_deposit_enabled": true,
+    "vip_deposit_amount": "250",
+    "vip_deposit_product_handle": "vip-viewing-deposit",
+    "ultra_luxury_discount_enabled": true,
+    "ultra_luxury_discount_percent": 7,
+    "gift_message_enabled": true,
+    "social_instagram": "https://instagram.com/dubaidust",
+    "social_tiktok": "https://tiktok.com/@dubaidust",
+    "social_facebook": "https://facebook.com/dubaidust",
+    "social_whatsapp": "+27000000000",
+    "sections": {
+      "header": {
+        "type": "header",
+        "settings": {}
+      },
+      "footer": {
+        "type": "footer",
+        "settings": {}
+      }
+    },
+    "content_for_index": [
+      "hero",
+      "featured-collections",
+      "product-grid"
+    ]
+  }
+}

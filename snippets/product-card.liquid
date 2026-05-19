@@ -1,0 +1,79 @@
+{%- comment -%}
+  Renders a product card for grids.
+  
+  Accepts:
+  - product: {Object} Product object
+  - show_vendor: {Boolean} Show vendor name (default: true)
+{%- endcomment -%}
+
+{%- assign show_vendor = show_vendor | default: true -%}
+
+<div class="product-card" data-product-id="{{ product.id }}">
+  <a href="{{ product.url }}" class="product-card__image-wrap" aria-label="{{ product.title }}">
+    {%- if product.featured_image -%}
+      <img
+        class="product-card__image"
+        src="{{ product.featured_image | image_url: width: 600 }}"
+        alt="{{ product.featured_image.alt | escape | default: product.title }}"
+        width="600"
+        height="600"
+        loading="lazy"
+      >
+    {%- else -%}
+      <img
+        class="product-card__image"
+        src="{{ 'product-placeholder.svg' | asset_url }}"
+        alt="{{ product.title }}"
+        width="600"
+        height="600"
+        loading="lazy"
+      >
+    {%- endif -%}
+
+    {%- comment -%} Badges {%- endcomment -%}
+    {%- if product.compare_at_price > product.price -%}
+      {%- assign savings_percent = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round -%}
+      <span class="product-card__badge badge-sale">Save {{ savings_percent }}%</span>
+    {%- endif -%}
+
+    {%- for tag in product.tags -%}
+      {%- if tag == 'ultra-luxury' -%}
+        <span class="product-card__badge badge-ultra">✦ Ultra Luxury</span>
+        {%- break -%}
+      {%- endif -%}
+      {%- if tag == 'new' -%}
+        <span class="product-card__badge badge-new">New</span>
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- comment -%} Quick Add Overlay {%- endcomment -%}
+    <div class="product-card__overlay">
+      <span class="btn btn-primary btn-sm">View Product</span>
+    </div>
+  </a>
+
+  <div class="product-card__info">
+    {%- if show_vendor and product.vendor != blank -%}
+      <p class="product-card__vendor">{{ product.vendor }}</p>
+    {%- endif -%}
+
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    <div class="product-card__price">
+      {%- if product.price_varies -%}
+        <span class="price--current">From {{ product.price_min | money }}</span>
+      {%- else -%}
+        <span class="price--current">{{ product.price | money }}</span>
+      {%- endif -%}
+
+      {%- if product.compare_at_price > product.price -%}
+        <span class="price--compare">{{ product.compare_at_price | money }}</span>
+        {%- assign saved = product.compare_at_price | minus: product.price -%}
+        <span class="price--save">Save {{ saved | money }}</span>
+      {%- endif -%}
+    </div>
+  </div>
+</div>

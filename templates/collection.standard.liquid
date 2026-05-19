@@ -1,0 +1,87 @@
+{%- comment -%}
+  Standard Collection Template
+  templates/collection.standard.liquid
+  
+  Used for: Cosmetics, Jewellery, Perfume, Small Electronics,
+  Phone & Smartwatch Accessories, Men's Luxury Watches,
+  Ladies' Luxury Watches, Handbags
+{%- endcomment -%}
+
+{% paginate collection.products by 24 %}
+
+<div class="collection-header">
+  <p class="tagline" style="color: var(--color-gold);">Collection</p>
+  <h1>{{ collection.title }}</h1>
+  <span class="collection-count">{{ collection.products_count }} product{{ collection.products_count | pluralize: '', 's' }}</span>
+</div>
+
+{%- if collection.description != blank -%}
+  <div class="collection-description">
+    {{ collection.description }}
+  </div>
+{%- endif -%}
+
+<div class="container section-padding" style="padding-top: 0;">
+  {%- comment -%} Filter / Sort Bar {%- endcomment -%}
+  <div class="collection-filter-bar">
+    <div>
+      {%- if current_tags.size > 0 -%}
+        <span class="text-muted" style="font-size: 0.8125rem;">
+          Filtered by:
+          {%- for tag in current_tags -%}
+            <span class="status-badge status-badge--active">{{ tag }}</span>
+          {%- endfor -%}
+          &bull; <a href="{{ collection.url }}">Clear all</a>
+        </span>
+      {%- endif -%}
+    </div>
+    <div class="filter-sort">
+      <select data-sort-select>
+        <option value="manual"{% if collection.sort_by == 'manual' %} selected{% endif %}>Featured</option>
+        <option value="best-selling"{% if collection.sort_by == 'best-selling' %} selected{% endif %}>Best Selling</option>
+        <option value="price-ascending"{% if collection.sort_by == 'price-ascending' %} selected{% endif %}>Price: Low to High</option>
+        <option value="price-descending"{% if collection.sort_by == 'price-descending' %} selected{% endif %}>Price: High to Low</option>
+        <option value="title-ascending"{% if collection.sort_by == 'title-ascending' %} selected{% endif %}>Name: A–Z</option>
+        <option value="title-descending"{% if collection.sort_by == 'title-descending' %} selected{% endif %}>Name: Z–A</option>
+        <option value="created-descending"{% if collection.sort_by == 'created-descending' %} selected{% endif %}>Newest First</option>
+      </select>
+    </div>
+  </div>
+
+  {%- comment -%} Product Grid {%- endcomment -%}
+  {%- if collection.products.size > 0 -%}
+    <div class="product-grid">
+      {%- for product in collection.products -%}
+        {% render 'product-card', product: product %}
+      {%- endfor -%}
+    </div>
+  {%- else -%}
+    <div class="text-center" style="padding: 80px 0;">
+      <p style="font-size: 2rem; margin-bottom: 12px; color: var(--color-gold);">✦</p>
+      <h3>No products found</h3>
+      <p class="text-muted">This collection is being curated. Check back soon.</p>
+      <a href="/collections" class="btn btn-outline mt-3">Browse All Collections</a>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Pagination {%- endcomment -%}
+  {%- if paginate.pages > 1 -%}
+    <div class="pagination">
+      {%- if paginate.previous -%}
+        <a href="{{ paginate.previous.url }}">&laquo;</a>
+      {%- endif -%}
+      {%- for part in paginate.parts -%}
+        {%- if part.is_link -%}
+          <a href="{{ part.url }}">{{ part.title }}</a>
+        {%- else -%}
+          <span class="current">{{ part.title }}</span>
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if paginate.next -%}
+        <a href="{{ paginate.next.url }}">&raquo;</a>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{% endpaginate %}

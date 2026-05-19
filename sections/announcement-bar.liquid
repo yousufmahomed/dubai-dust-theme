@@ -1,0 +1,36 @@
+{%- comment -%}
+  Announcement Bar Section
+{%- endcomment -%}
+
+{%- if section.settings.show_announcement -%}
+<div class="announcement-bar" role="banner">
+  <div class="container">
+    {{ section.settings.announcement_text }}
+  </div>
+</div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "Show Announcement",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "announcement_text",
+      "label": "Announcement Text",
+      "default": "<p>✦ FREE SHIPPING on orders over R2,000 ✦ <a href='/collections'>Shop Now</a></p>"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement Bar"
+    }
+  ]
+}
+{% endschema %}

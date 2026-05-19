@@ -1,0 +1,57 @@
+{%- comment -%} All Collections Page {%- endcomment -%}
+
+<div class="page-template">
+  <div class="container">
+    <div class="section-header">
+      <p class="tagline">Browse All</p>
+      <h1><span class="gold-gradient">Our Collections</span></h1>
+    </div>
+
+    {%- comment -%} Standard Collections {%- endcomment -%}
+    <h3 class="mb-3" style="color: var(--color-gold);">✦ Standard Collections</h3>
+    <div class="collections-grid mb-4">
+      {%- for collection in collections -%}
+        {%- unless collection.handle contains 'ultra-luxury' -%}
+          <a href="{{ collection.url }}" class="collection-card">
+            <div class="collection-card__bg">
+              {%- if collection.image -%}
+                <img src="{{ collection.image | image_url: width: 600 }}" alt="{{ collection.title }}" loading="lazy"
+                  style="width:100%;height:100%;object-fit:cover;opacity:0.3;">
+              {%- endif -%}
+            </div>
+            <div class="collection-card__content">
+              <span class="collection-card__tag">Collection</span>
+              <h3 class="collection-card__name">{{ collection.title }}</h3>
+              <p class="collection-card__count">{{ collection.products_count }} products</p>
+            </div>
+          </a>
+        {%- endunless -%}
+      {%- endfor -%}
+    </div>
+
+    <div class="ornament-divider"></div>
+
+    {%- comment -%} Ultra-Luxury Collections {%- endcomment -%}
+    <h3 class="mb-3" style="color: var(--color-gold);">👑 Ultra-Luxury Collections</h3>
+    <p class="text-muted text-center mb-4" style="font-size: 0.875rem;">VIP Viewing Deposit of R250 required for access (fully refundable)</p>
+    <div class="collections-grid">
+      {%- for collection in collections -%}
+        {%- if collection.handle contains 'ultra-luxury' -%}
+          <a href="{{ collection.url }}" class="collection-card collection-card--ultra">
+            <div class="collection-card__bg">
+              {%- if collection.image -%}
+                <img src="{{ collection.image | image_url: width: 600 }}" alt="{{ collection.title }}" loading="lazy"
+                  style="width:100%;height:100%;object-fit:cover;opacity:0.2;">
+              {%- endif -%}
+            </div>
+            <div class="collection-card__content">
+              <span class="collection-card__tag">✦ Ultra-Luxury ✦</span>
+              <h3 class="collection-card__name">{{ collection.title }}</h3>
+              <p class="collection-card__count">{{ collection.products_count }} exclusive products</p>
+            </div>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>

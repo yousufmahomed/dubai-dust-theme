@@ -1,0 +1,63 @@
+{%- comment -%}
+  Default Collection Template
+  Falls back to standard layout for collections without a specific template assigned.
+{%- endcomment -%}
+
+{% paginate collection.products by 24 %}
+
+<div class="collection-header">
+  {%- if collection.handle contains 'ultra-luxury' -%}
+    <p class="tagline" style="color: var(--color-gold);">✦ Ultra-Luxury Collection ✦</p>
+  {%- else -%}
+    <p class="tagline" style="color: var(--color-gold);">Collection</p>
+  {%- endif -%}
+  <h1>{{ collection.title }}</h1>
+  <span class="collection-count">{{ collection.products_count }} product{{ collection.products_count | pluralize: '', 's' }}</span>
+</div>
+
+{%- if collection.description != blank -%}
+  <div class="collection-description">{{ collection.description }}</div>
+{%- endif -%}
+
+<div class="container section-padding" style="padding-top: 0;">
+  <div class="collection-filter-bar">
+    <div></div>
+    <div class="filter-sort">
+      <select data-sort-select>
+        <option value="manual"{% if collection.sort_by == 'manual' %} selected{% endif %}>Featured</option>
+        <option value="best-selling"{% if collection.sort_by == 'best-selling' %} selected{% endif %}>Best Selling</option>
+        <option value="price-ascending"{% if collection.sort_by == 'price-ascending' %} selected{% endif %}>Price: Low to High</option>
+        <option value="price-descending"{% if collection.sort_by == 'price-descending' %} selected{% endif %}>Price: High to Low</option>
+        <option value="title-ascending"{% if collection.sort_by == 'title-ascending' %} selected{% endif %}>A–Z</option>
+        <option value="created-descending"{% if collection.sort_by == 'created-descending' %} selected{% endif %}>Newest</option>
+      </select>
+    </div>
+  </div>
+
+  {%- if collection.products.size > 0 -%}
+    <div class="product-grid">
+      {%- for product in collection.products -%}
+        {% render 'product-card', product: product %}
+      {%- endfor -%}
+    </div>
+  {%- else -%}
+    <div class="text-center" style="padding: 80px 0;">
+      <p style="font-size: 2rem; margin-bottom: 12px; color: var(--color-gold);">✦</p>
+      <h3>No products yet</h3>
+      <p class="text-muted">Check back soon.</p>
+    </div>
+  {%- endif -%}
+
+  {%- if paginate.pages > 1 -%}
+    <div class="pagination">
+      {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}">&laquo;</a>{%- endif -%}
+      {%- for part in paginate.parts -%}
+        {%- if part.is_link -%}<a href="{{ part.url }}">{{ part.title }}</a>
+        {%- else -%}<span class="current">{{ part.title }}</span>{%- endif -%}
+      {%- endfor -%}
+      {%- if paginate.next -%}<a href="{{ paginate.next.url }}">&raquo;</a>{%- endif -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{% endpaginate %}

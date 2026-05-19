@@ -1,0 +1,301 @@
+{%- comment -%}
+  Product Template — Luxury Layout
+  templates/product.liquid
+{%- endcomment -%}
+
+{%- assign is_ultra_luxury = false -%}
+{%- for tag in product.tags -%}
+  {%- if tag == 'ultra-luxury' -%}
+    {%- assign is_ultra_luxury = true -%}
+  {%- endif -%}
+{%- endfor -%}
+
+<div class="product-page">
+  <div class="container">
+
+    {%- comment -%} Breadcrumb {%- endcomment -%}
+    <nav style="margin-bottom: 32px; font-size: 0.8125rem;">
+      <a href="/" style="color: var(--color-text-muted);">Home</a>
+      <span style="color: var(--color-text-muted); margin: 0 8px;">/</span>
+      {%- if collection -%}
+        <a href="{{ collection.url }}" style="color: var(--color-text-muted);">{{ collection.title }}</a>
+        <span style="color: var(--color-text-muted); margin: 0 8px;">/</span>
+      {%- endif -%}
+      <span style="color: var(--color-gold);">{{ product.title }}</span>
+    </nav>
+
+    <div class="product-layout">
+      {%- comment -%} ===== LEFT: GALLERY ===== {%- endcomment -%}
+      <div class="product-gallery">
+        <div class="product-gallery__main">
+          {%- if product.featured_image -%}
+            <img
+              src="{{ product.featured_image | image_url: width: 1000 }}"
+              alt="{{ product.featured_image.alt | escape | default: product.title }}"
+              id="product-main-image"
+            >
+          {%- else -%}
+            <img src="{{ 'product-placeholder.svg' | asset_url }}" alt="{{ product.title }}">
+          {%- endif -%}
+        </div>
+
+        {%- if product.images.size > 1 -%}
+          <div class="product-gallery__thumbs">
+            {%- for image in product.images -%}
+              <div class="product-gallery__thumb{% if forloop.first %} active{% endif %}">
+                <img
+                  src="{{ image | image_url: width: 160 }}"
+                  alt="{{ image.alt | escape | default: product.title }}"
+                  loading="lazy"
+                >
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} ===== RIGHT: DETAILS ===== {%- endcomment -%}
+      <div class="product-details">
+        {%- comment -%} Badges {%- endcomment -%}
+        {%- if is_ultra_luxury -%}
+          <span class="status-badge badge-ultra mb-2" style="display: inline-flex;">✦ Ultra-Luxury</span>
+        {%- endif -%}
+
+        {%- comment -%} Vendor {%- endcomment -%}
+        {%- if product.vendor != blank -%}
+          <p class="product-details__vendor">{{ product.vendor }}</p>
+        {%- endif -%}
+
+        {%- comment -%} Title {%- endcomment -%}
+        <h1 class="product-details__title">{{ product.title }}</h1>
+
+        {%- comment -%} Price {%- endcomment -%}
+        <div class="product-details__price-wrap">
+          <span class="product-details__price">{{ product.price | money }}</span>
+          {%- if product.compare_at_price > product.price -%}
+            <span class="product-details__compare-price">{{ product.compare_at_price | money }}</span>
+            {%- assign savings = product.compare_at_price | minus: product.price -%}
+            {%- assign savings_pct = savings | times: 100.0 | divided_by: product.compare_at_price | round -%}
+            <span class="product-details__save-badge">Save {{ savings_pct }}%</span>
+          {%- endif -%}
+        </div>
+
+        {%- if is_ultra_luxury -%}
+          <p style="font-size: 0.75rem; color: var(--color-gold); margin-bottom: 16px; opacity: 0.8;">
+            ✦ VIP members receive surprise benefits at checkout
+          </p>
+        {%- endif -%}
+
+        {%- comment -%} Description {%- endcomment -%}
+        {%- if product.description != blank -%}
+          <div class="product-details__description">
+            {{ product.description }}
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Variant Selector {%- endcomment -%}
+        {%- if product.variants.size > 1 -%}
+          <div style="margin-bottom: 20px;">
+            {%- for option in product.options_with_values -%}
+              <label style="display: block; font-size: 0.8125rem; font-weight: 500; margin-bottom: 8px; color: var(--color-text);">
+                {{ option.name }}
+              </label>
+              <select
+                name="option-{{ forloop.index }}"
+                class="variant-option-select"
+                style="width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(212,168,83,0.15); border-radius: 6px; color: var(--color-text); margin-bottom: 16px; cursor: pointer;"
+              >
+                {%- for value in option.values -%}
+                  <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>
+                    {{ value }}
+                  </option>
+                {%- endfor -%}
+              </select>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Add to Cart Form {%- endcomment -%}
+        <form action="/cart/add" method="post" id="product-form">
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" id="variant-id">
+
+          {%- comment -%} Quantity {%- endcomment -%}
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; font-size: 0.8125rem; font-weight: 500; margin-bottom: 8px; color: var(--color-text);">Quantity</label>
+            <div class="quantity-selector">
+              <button type="button" data-qty-minus aria-label="Decrease quantity">−</button>
+              <input type="number" name="quantity" value="1" min="1" max="10" aria-label="Quantity">
+              <button type="button" data-qty-plus aria-label="Increase quantity">+</button>
+            </div>
+          </div>
+
+          {%- comment -%} Add to Cart Button {%- endcomment -%}
+          <div class="add-to-cart-wrap">
+            {%- if product.available -%}
+              <button type="submit" class="btn btn-primary btn-add-to-cart">
+                <svg class="cart-icon" xmlns="https://www.iconpacks.net/icons/2/free-add-to-cart-icon-3046-thumb.png" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                Add to Cart
+              </button>
+            {%- else -%}
+              <button type="button" class="btn btn-outline" disabled style="width: 100%; opacity: 0.5; cursor: not-allowed;">
+                Sold Out
+              </button>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Gift Message (Ultra-Luxury) {%- endcomment -%}
+          {%- if is_ultra_luxury and settings.gift_message_enabled -%}
+            <div class="gift-message-wrap">
+              <label>
+                <input type="checkbox" id="gift-message-toggle">
+                🎁 Add a gift message
+              </label>
+              <textarea
+                name="properties[Gift Message]"
+                class="gift-message-textarea"
+                placeholder="Write your personal message here..."
+                style="display: none;"
+                maxlength="500"
+              ></textarea>
+            </div>
+          {%- endif -%}
+        </form>
+
+        {%- comment -%} Product Meta {%- endcomment -%}
+        <div class="product-meta">
+          {%- if product.vendor != blank -%}
+            <div class="product-meta__row">
+              <span>Brand</span>
+              <span>{{ product.vendor }}</span>
+            </div>
+          {%- endif -%}
+          {%- if product.type != blank -%}
+            <div class="product-meta__row">
+              <span>Type</span>
+              <span>{{ product.type }}</span>
+            </div>
+          {%- endif -%}
+          <div class="product-meta__row">
+            <span>SKU</span>
+            <span>{{ product.selected_or_first_available_variant.sku | default: 'N/A' }}</span>
+          </div>
+          <div class="product-meta__row">
+            <span>Availability</span>
+            <span>
+              {%- if product.available -%}
+                <span class="status-badge status-badge--active">In Stock</span>
+              {%- else -%}
+                <span class="status-badge status-badge--inactive">Sold Out</span>
+              {%- endif -%}
+            </span>
+          </div>
+          <div class="product-meta__row">
+            <span>Shipping</span>
+            <span>2–5 business days nationwide</span>
+          </div>
+          {%- if is_ultra_luxury -%}
+            <div class="product-meta__row">
+              <span>Service</span>
+              <span style="color: var(--color-gold);">White-Glove Delivery</span>
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Tags {%- endcomment -%}
+        {%- if product.tags.size > 0 -%}
+          <div style="margin-top: 20px; display: flex; gap: 8px; flex-wrap: wrap;">
+            {%- for tag in product.tags -%}
+              {%- unless tag contains '_' -%}
+                <a href="{{ collection.url }}/{{ tag | handle }}"
+                   style="font-size: 0.6875rem; padding: 4px 12px; border: 1px solid rgba(212,168,83,0.1); border-radius: 20px; color: var(--color-text-muted);">
+                  {{ tag }}
+                </a>
+              {%- endunless -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{%- comment -%} Related Products {%- endcomment -%}
+{%- if collection -%}
+  <section class="section-padding" style="border-top: 1px solid rgba(212,168,83,0.05);">
+    <div class="container">
+      <div class="section-header">
+        <p class="tagline">You May Also Like</p>
+        <h2><span class="gold-gradient">Related Products</span></h2>
+      </div>
+      <div class="product-grid">
+        {%- assign related_count = 0 -%}
+        {%- for related_product in collection.products -%}
+          {%- if related_product.id != product.id and related_count < 4 -%}
+            {% render 'product-card', product: related_product %}
+            {%- assign related_count = related_count | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{%- comment -%} Product Schema for SEO {%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "description": {{ product.description | strip_html | truncate: 200 | json }},
+  "image": "{{ product.featured_image | image_url: width: 1000 }}",
+  "brand": {
+    "@type": "Brand",
+    "name": {{ product.vendor | json }}
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ shop.url }}{{ product.url }}",
+    "priceCurrency": "ZAR",
+    "price": "{{ product.price | money_without_currency | remove: ' ' }}",
+    "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"
+  }
+}
+</script>
+
+{%- comment -%} Variant Selection JS {%- endcomment -%}
+<script>
+(function() {
+  var productJson = {{ product.variants | json }};
+  var selects = document.querySelectorAll('.variant-option-select');
+  var variantIdInput = document.getElementById('variant-id');
+
+  if (selects.length > 0 && variantIdInput) {
+    selects.forEach(function(select) {
+      select.addEventListener('change', function() {
+        var selectedOptions = [];
+        selects.forEach(function(s) { selectedOptions.push(s.value); });
+
+        for (var i = 0; i < productJson.length; i++) {
+          var variant = productJson[i];
+          var match = true;
+          for (var j = 0; j < selectedOptions.length; j++) {
+            if (variant['option' + (j + 1)] !== selectedOptions[j]) {
+              match = false;
+              break;
+            }
+          }
+          if (match) {
+            variantIdInput.value = variant.id;
+            // Update price display
+            var priceEl = document.querySelector('.product-details__price');
+            if (priceEl && variant.price) {
+              priceEl.textContent = 'R' + (variant.price / 100).toFixed(2);
+            }
+            break;
+          }
+        }
+      });
+    });
+  }
+})();
+</script>

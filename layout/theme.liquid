@@ -1,0 +1,115 @@
+<!doctype html>
+<html class="no-js" lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+
+  {%- comment -%} SEO Meta Tags {%- endcomment -%}
+  <title>
+    {{ page_title }}
+    {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+    {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+    {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+  </title>
+
+  {%- if page_description -%}
+    <meta name="description" content="{{ page_description | escape }}">
+  {%- endif -%}
+
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  {%- if settings.favicon != blank -%}
+    <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+  {%- endif -%}
+
+  {%- comment -%} Preconnect to Google Fonts {%- endcomment -%}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  {%- comment -%} Load Playfair Display & Montserrat {%- endcomment -%}
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  {%- comment -%} Theme CSS {%- endcomment -%}
+  {{ 'theme.css' | asset_url | stylesheet_tag }}
+
+  {%- comment -%} Shopify Required {%- endcomment -%}
+  {{ content_for_header }}
+
+  {%- comment -%} Open Graph / Social Sharing {%- endcomment -%}
+  <meta property="og:site_name" content="{{ shop.name }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:title" content="{{ page_title }}">
+  <meta property="og:type" content="website">
+  <meta property="og:description" content="{{ page_description | default: shop.description | escape }}">
+  {%- if page_image -%}
+    <meta property="og:image" content="http:{{ page_image | image_url }}">
+    <meta property="og:image:secure_url" content="https:{{ page_image | image_url }}">
+  {%- endif -%}
+
+  {%- comment -%} Twitter Card {%- endcomment -%}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page_title }}">
+  <meta name="twitter:description" content="{{ page_description | default: shop.description | escape }}">
+
+  {%- comment -%} Schema.org Structured Data {%- endcomment -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "{{ shop.name }}",
+    "url": "{{ shop.url }}",
+    "description": "{{ shop.description | escape }}",
+    "logo": "{% if settings.logo %}{{ settings.logo | image_url: width: 500 }}{% endif %}"
+  }
+  </script>
+
+  <style>
+    :root {
+      --color-bg: {{ settings.color_background | default: '#0a0e1a' }};
+      --color-gold: {{ settings.color_gold | default: '#d4a853' }};
+      --color-gold-alt: {{ settings.color_gold_alt | default: '#D4AF37' }};
+      --color-purple: {{ settings.color_deep_purple | default: '#4A148C' }};
+      --color-royal-blue: {{ settings.color_royal_blue | default: '#1565C0' }};
+      --color-text: {{ settings.color_text_primary | default: '#f5f0e8' }};
+      --color-text-muted: {{ settings.color_text_muted | default: '#a0998c' }};
+      --font-heading: 'Playfair Display', 'Cinzel', serif;
+      --font-body: 'Montserrat', 'Amiri', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="template-{{ template.name | handle }}{% if template.suffix %} template-{{ template.name }}-{{ template.suffix }}{% endif %}">
+  <a class="skip-to-content" href="#MainContent">Skip to content</a>
+
+  {%- comment -%} Announcement Bar {%- endcomment -%}
+  {% section 'announcement-bar' %}
+
+  {%- comment -%} Header / Navigation {%- endcomment -%}
+  {% section 'header' %}
+
+  {%- comment -%} Main Content {%- endcomment -%}
+  <main id="MainContent" class="main-content" role="main">
+    {{ content_for_layout }}
+  </main>
+
+  {%- comment -%} Footer {%- endcomment -%}
+  {% section 'footer' %}
+
+  {%- comment -%} Cart Drawer {%- endcomment -%}
+  {% render 'cart-drawer' %}
+
+  {%- comment -%} Velvet Rope Feature {%- endcomment -%}
+  {%- if settings.velvet_rope_enabled -%}
+    {% render 'velvet-rope' %}
+  {%- endif -%}
+
+  {%- comment -%} Theme JavaScript {%- endcomment -%}
+  <script src="{{ 'theme.js' | asset_url }}" defer></script>
+
+  {%- comment -%} Checkout Discount Script for Ultra-Luxury {%- endcomment -%}
+  {%- if template.name == 'cart' or request.page_type == 'cart' -%}
+    <script src="{{ 'checkout-discount.js' | asset_url }}" defer></script>
+  {%- endif -%}
+</body>
+</html>

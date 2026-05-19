@@ -1,0 +1,111 @@
+{%- comment -%}
+  Featured Collections Grid — Homepage section
+{%- endcomment -%}
+
+<section class="featured-collections section-padding">
+  <div class="container">
+    <div class="section-header">
+      <p class="tagline">{{ section.settings.tagline | default: 'Curated For You' }}</p>
+      <h2><span class="gold-gradient">{{ section.settings.heading | default: 'Our Collections' }}</span></h2>
+      <p class="text-muted">{{ section.settings.description | default: 'From everyday luxury to ultra-premium — explore our handpicked collections' }}</p>
+    </div>
+
+    <div class="collections-grid">
+      {%- for block in section.blocks -%}
+        {%- assign coll = collections[block.settings.collection] -%}
+        {%- if coll != blank -%}
+          <a href="{{ coll.url }}" class="collection-card{% if block.settings.is_ultra_luxury %} collection-card--ultra{% endif %}" {{ block.shopify_attributes }}>
+            <div class="collection-card__bg">
+              {%- if coll.image -%}
+                <img
+                  src="{{ coll.image | image_url: width: 800 }}"
+                  alt="{{ coll.title }}"
+                  loading="lazy"
+                  style="width: 100%; height: 100%; object-fit: cover; opacity: 0.3;"
+                >
+              {%- endif -%}
+            </div>
+            <div class="collection-card__content">
+              {%- if block.settings.is_ultra_luxury -%}
+                <span class="collection-card__tag">✦ Ultra-Luxury ✦</span>
+              {%- else -%}
+                <span class="collection-card__tag">Collection</span>
+              {%- endif -%}
+              <h3 class="collection-card__name">{{ coll.title }}</h3>
+              <p class="collection-card__count">{{ coll.products_count }} products</p>
+            </div>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- comment -%} Placeholder if no blocks configured {%- endcomment -%}
+      {%- if section.blocks.size == 0 -%}
+        {%- for collection in collections limit: 8 -%}
+          <a href="{{ collection.url }}" class="collection-card{% if collection.handle contains 'ultra-luxury' %} collection-card--ultra{% endif %}">
+            <div class="collection-card__bg"></div>
+            <div class="collection-card__content">
+              {%- if collection.handle contains 'ultra-luxury' -%}
+                <span class="collection-card__tag">✦ Ultra-Luxury ✦</span>
+              {%- else -%}
+                <span class="collection-card__tag">Collection</span>
+              {%- endif -%}
+              <h3 class="collection-card__name">{{ collection.title }}</h3>
+              <p class="collection-card__count">{{ collection.products_count }} products</p>
+            </div>
+          </a>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured Collections",
+  "settings": [
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "Curated For You"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our Collections"
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "Description",
+      "default": "From everyday luxury to ultra-premium — explore our handpicked collections"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "checkbox",
+          "id": "is_ultra_luxury",
+          "label": "Ultra-Luxury Collection?",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collections",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}
