@@ -3847,7 +3847,23 @@ svg.icon-arrow,
   flex-shrink: 0 !important;
 }
 
-/* Make collection images visible (they load at width:0) */
+/* Fix collection card media containers (position:absolute + width:0 bug) */
+.section-collection-list .card__media,
+.collection-list__item .card__media {
+  width: 100% !important;
+  height: 100% !important;
+  inset: 0 !important;
+  position: absolute !important;
+}
+
+.section-collection-list .card__media .media,
+.collection-list__item .card__media .media {
+  width: 100% !important;
+  height: 100% !important;
+  position: relative !important;
+}
+
+/* Make collection images visible */
 .section-collection-list img,
 .collection-list__item img,
 .card--collection img,
@@ -3855,6 +3871,7 @@ svg.icon-arrow,
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
+  position: relative !important;
 }
 
 /* Shrink generic placeholder SVGs too */
