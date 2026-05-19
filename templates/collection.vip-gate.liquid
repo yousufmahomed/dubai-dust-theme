@@ -1,0 +1,241 @@
+{%- comment -%}
+  ============================================================
+  VIP DEPOSIT GATE — Ultra-Luxury Collections
+  templates/collection.vip-gate.liquid
+  ============================================================
+  
+  This template is used for ultra-luxury collections that require
+  an R250 viewing deposit before products are revealed.
+  
+  The deposit is:
+  • Fully refundable
+  • Deducted from any ultra-luxury purchase
+  • Required before viewing products
+  
+  How to use:
+  1. Create a hidden product called "VIP Viewing Deposit" priced at R250
+  2. Assign this template to ultra-luxury collections
+  3. The template checks localStorage for deposit confirmation
+  4. If deposited, products are shown; otherwise gate is displayed
+  ============================================================
+{%- endcomment -%}
+
+{%- assign deposit_amount = settings.vip_deposit_amount | default: '250' -%}
+{%- assign deposit_product_handle = settings.vip_deposit_product_handle | default: 'vip-viewing-deposit' -%}
+
+{%- comment -%} Collection Header (always visible) {%- endcomment -%}
+<div class="collection-header">
+  <p class="tagline" style="color: var(--color-gold);">✦ Ultra-Luxury Collection ✦</p>
+  <h1><span class="gold-gradient">{{ collection.title }}</span></h1>
+  {%- if collection.description != blank -%}
+    <div class="collection-description">{{ collection.description }}</div>
+  {%- endif -%}
+</div>
+
+{%- comment -%} VIP Gate — shown when deposit not paid {%- endcomment -%}
+<div id="vip-gate-section" class="vip-gate">
+  <div class="vip-gate__card">
+    <span class="vip-gate__crown">👑</span>
+    <h2 class="vip-gate__title"><span class="gold-gradient">VIP Access Required</span></h2>
+    <p class="vip-gate__subtitle">Ultra-Luxury Viewing Deposit</p>
+
+    <div class="vip-gate__amount">R{{ deposit_amount }}</div>
+    <p class="vip-gate__amount-label">One-time refundable viewing deposit</p>
+
+    <div class="vip-gate__features">
+      <div class="vip-gate__feature">
+        <span class="vip-gate__feature-icon">✦</span>
+        <span>Access to our exclusive ultra-luxury collection featuring the world's most prestigious brands</span>
+      </div>
+      <div class="vip-gate__feature">
+        <span class="vip-gate__feature-icon">✦</span>
+        <span>Deposit is <strong style="color: var(--color-gold);">100% refundable</strong> — returned if you choose not to purchase</span>
+      </div>
+      <div class="vip-gate__feature">
+        <span class="vip-gate__feature-icon">✦</span>
+        <span>Deposit is <strong style="color: var(--color-gold);">deducted from your order</strong> when you make a purchase</span>
+      </div>
+      <div class="vip-gate__feature">
+        <span class="vip-gate__feature-icon">✦</span>
+        <span>Surprise VIP benefits applied automatically at checkout</span>
+      </div>
+    </div>
+
+    {%- comment -%} Deposit Payment Button {%- endcomment -%}
+    <form id="vip-deposit-form" action="/cart/add" method="post">
+      {%- assign deposit_product = all_products[deposit_product_handle] -%}
+      {%- if deposit_product != blank -%}
+        <input type="hidden" name="id" value="{{ deposit_product.variants.first.id }}">
+      {%- else -%}
+        <input type="hidden" name="id" value="" id="deposit-variant-id">
+      {%- endif -%}
+      <input type="hidden" name="quantity" value="1">
+      <input type="hidden" name="properties[_collection]" value="{{ collection.handle }}">
+      <input type="hidden" name="properties[_type]" value="vip-deposit">
+
+      <button type="submit" class="btn btn-primary btn-lg" id="vip-deposit-btn" style="width: 100%;">
+        Pay R{{ deposit_amount }} Viewing Deposit
+      </button>
+    </form>
+
+    {%- comment -%} Or bypass if already deposited via client check {%- endcomment -%}
+    <button id="vip-already-deposited" class="btn btn-outline btn-sm mt-3" style="display: none;">
+      I've Already Paid — Unlock Collection
+    </button>
+
+    <p class="vip-gate__refund-note">
+      🔒 Secure payment via Yoco &bull; R{{ deposit_amount }} is fully refundable within 14 days
+      <br>
+      <small>By paying the deposit, you agree to our <a href="/policies/terms-of-service">Terms &amp; Conditions</a></small>
+    </p>
+  </div>
+</div>
+
+{%- comment -%} Products Section — hidden until deposit confirmed {%- endcomment -%}
+<div id="vip-products-section" style="display: none;">
+  <div class="container section-padding">
+    <div class="collection-filter-bar">
+      <span class="collection-count">{{ collection.products_count }} exclusive products</span>
+      <div class="filter-sort">
+        <select data-sort-select>
+          <option value="manual">Featured</option>
+          <option value="price-ascending">Price: Low to High</option>
+          <option value="price-descending">Price: High to Low</option>
+          <option value="title-ascending">Name: A-Z</option>
+          <option value="title-descending">Name: Z-A</option>
+          <option value="created-descending">Newest First</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="product-grid">
+      {%- for product in collection.products -%}
+        {%- unless product.handle == deposit_product_handle -%}
+          {% render 'product-card', product: product %}
+        {%- endunless -%}
+      {%- endfor -%}
+    </div>
+
+    {%- if collection.products.size == 0 -%}
+      <div class="text-center" style="padding: 80px 0;">
+        <p style="font-size: 2rem; margin-bottom: 12px;">✦</p>
+        <p>This collection is being curated. Check back soon for exclusive products.</p>
+      </div>
+    {%- endif -%}
+
+    {% comment %} Pagination {% endcomment %}
+    {%- if paginate.pages > 1 -%}
+      {% paginate collection.products by 24 %}
+        <div class="pagination">
+          {%- if paginate.previous -%}
+            <a href="{{ paginate.previous.url }}">&laquo;</a>
+          {%- endif -%}
+          {%- for part in paginate.parts -%}
+            {%- if part.is_link -%}
+              <a href="{{ part.url }}">{{ part.title }}</a>
+            {%- else -%}
+              <span class="current">{{ part.title }}</span>
+            {%- endif -%}
+          {%- endfor -%}
+          {%- if paginate.next -%}
+            <a href="{{ paginate.next.url }}">&raquo;</a>
+          {%- endif -%}
+        </div>
+      {% endpaginate %}
+    {%- endif -%}
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  const DEPOSIT_KEY = 'dd_vip_deposits';
+  const COLLECTION_HANDLE = {{ collection.handle | json }};
+
+  function hasDeposit() {
+    try {
+      const deposits = JSON.parse(localStorage.getItem(DEPOSIT_KEY) || '{}');
+      return deposits[COLLECTION_HANDLE] === true;
+    } catch (e) { return false; }
+  }
+
+  function setDeposit() {
+    try {
+      const deposits = JSON.parse(localStorage.getItem(DEPOSIT_KEY) || '{}');
+      deposits[COLLECTION_HANDLE] = true;
+      localStorage.setItem(DEPOSIT_KEY, JSON.stringify(deposits));
+    } catch (e) {}
+  }
+
+  function showProducts() {
+    const gate = document.getElementById('vip-gate-section');
+    const products = document.getElementById('vip-products-section');
+    if (gate) gate.style.display = 'none';
+    if (products) products.style.display = 'block';
+  }
+
+  // Check if already deposited
+  if (hasDeposit()) {
+    showProducts();
+  } else {
+    // Show the "already deposited" bypass button
+    const bypassBtn = document.getElementById('vip-already-deposited');
+    // Check URL params for deposit confirmation
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('deposit') === 'confirmed') {
+      setDeposit();
+      showProducts();
+    }
+  }
+
+  // Handle deposit form submission
+  const depositForm = document.getElementById('vip-deposit-form');
+  const depositBtn = document.getElementById('vip-deposit-btn');
+
+  if (depositForm) {
+    depositForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (depositBtn) {
+        depositBtn.disabled = true;
+        depositBtn.innerHTML = '<span class="loading-spinner"></span> Processing...';
+      }
+
+      const formData = new FormData(depositForm);
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Mark as deposited and redirect to checkout
+        setDeposit();
+        window.location.href = '/checkout';
+      })
+      .catch(err => {
+        // If deposit product not found, just mark as deposited (demo mode)
+        setDeposit();
+        showProducts();
+        if (window.DubaiDust && window.DubaiDust.showToast) {
+          window.DubaiDust.showToast('👑', 'VIP Access granted! Welcome to the ultra-luxury collection.');
+        }
+        if (depositBtn) {
+          depositBtn.disabled = false;
+          depositBtn.innerHTML = 'Pay R{{ deposit_amount }} Viewing Deposit';
+        }
+      });
+    });
+  }
+
+  // Bypass button for returning depositors
+  const bypassBtn = document.getElementById('vip-already-deposited');
+  if (bypassBtn) {
+    bypassBtn.addEventListener('click', function() {
+      setDeposit();
+      showProducts();
+    });
+  }
+
+})();
+</script>

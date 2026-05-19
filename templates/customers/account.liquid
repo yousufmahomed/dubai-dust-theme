@@ -1,0 +1,71 @@
+{%- comment -%} Customer Account Template {%- endcomment -%}
+
+<div class="page-template">
+  <div class="container container--narrow">
+    <h1 class="text-center"><span class="gold-gradient">My Account</span></h1>
+    <p class="text-center text-muted mb-4">Welcome back, {{ customer.first_name | default: 'valued customer' }}</p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 48px;">
+      <div class="glass-card">
+        <h4>Account Details</h4>
+        <p style="font-size: 0.875rem;">{{ customer.name }}</p>
+        <p style="font-size: 0.875rem; color: var(--color-text-muted);">{{ customer.email }}</p>
+        <a href="/account/logout" class="btn btn-outline btn-sm mt-3">Sign Out</a>
+      </div>
+      <div class="glass-card">
+        <h4>Default Address</h4>
+        {%- if customer.default_address -%}
+          <p style="font-size: 0.875rem; color: var(--color-text-muted);">
+            {{ customer.default_address | format_address }}
+          </p>
+        {%- else -%}
+          <p style="font-size: 0.875rem; color: var(--color-text-muted);">No address saved yet.</p>
+        {%- endif -%}
+        <a href="/account/addresses" class="btn btn-outline btn-sm mt-3">Manage Addresses</a>
+      </div>
+    </div>
+
+    <h2 class="text-center mb-4"><span class="gold-gradient">Order History</span></h2>
+
+    {%- if customer.orders.size > 0 -%}
+      <div class="glass-card" style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 1px solid rgba(212,168,83,0.15);">
+              <th style="text-align: left; padding: 12px 8px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted);">Order</th>
+              <th style="text-align: left; padding: 12px 8px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted);">Date</th>
+              <th style="text-align: left; padding: 12px 8px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted);">Status</th>
+              <th style="text-align: right; padding: 12px 8px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted);">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {%- for order in customer.orders -%}
+              <tr style="border-bottom: 1px solid rgba(212,168,83,0.05);">
+                <td style="padding: 12px 8px;">
+                  <a href="{{ order.customer_url }}" style="font-weight: 600;">{{ order.name }}</a>
+                </td>
+                <td style="padding: 12px 8px; font-size: 0.875rem; color: var(--color-text-muted);">
+                  {{ order.created_at | date: '%d %B %Y' }}
+                </td>
+                <td style="padding: 12px 8px;">
+                  <span class="status-badge status-badge--{% if order.fulfillment_status == 'fulfilled' %}active{% else %}pending{% endif %}">
+                    {{ order.fulfillment_status_label | default: 'Processing' }}
+                  </span>
+                </td>
+                <td style="padding: 12px 8px; text-align: right; color: var(--color-gold); font-weight: 600;">
+                  {{ order.total_price | money }}
+                </td>
+              </tr>
+            {%- endfor -%}
+          </tbody>
+        </table>
+      </div>
+    {%- else -%}
+      <div class="glass-card text-center" style="padding: 48px;">
+        <p style="font-size: 2rem; margin-bottom: 12px;">✦</p>
+        <p>You haven't placed any orders yet.</p>
+        <a href="/collections" class="btn btn-primary mt-3">Start Shopping</a>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
