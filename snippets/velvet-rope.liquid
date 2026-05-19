@@ -1,296 +1,393 @@
-{%- comment -%}
-  ============================================================
-  DUBAI DUST — VELVET ROPE FEATURE
-  snippets/velvet-rope.liquid
-  ============================================================
-  Dual-tier exclusivity experience:
-  
-  TIER 1 — Standard Collections
-    • Trigger: Every 25th visit (configurable)
-    • Timer: 90–110 seconds (randomized)
-    • Purpose: Creates artificial scarcity
-  
-  TIER 2 — Ultra-Luxury Collections
-    • Trigger: EVERY visit
-    • Timer: 170–190 seconds (randomized)
-    • Includes VIP badge & R250 deposit notice
-    • Purpose: Ensures only serious buyers access ultra-luxury
-  
-  Visit tracking via localStorage.
-  ============================================================
-{%- endcomment -%}
+{% comment %}
+  Velvet Rope - Exclusive Access Gate
+  Two tiers:
+  1. Standard Luxury: Jewellery, Perfume, Men's/Ladies' Watches - 25th visit, ~90-110s wait
+  2. Ultra Luxury: All Ultra Luxury collections - EVERY visit, ~180s wait, R250 ONCE-OFF VIP deposit (lifetime access), AI concierge mention
+{% endcomment %}
 
-{%- comment -%} Determine if we're on a collection page {%- endcomment -%}
-{%- if template.name == 'collection' -%}
+{% assign standard_velvet = 'jewellery,perfume,mens-luxury-watches,ladies-luxury-watches' | split: ',' %}
+{% assign ultra_velvet = 'ultra-luxury-mens-watches,ultra-luxury-ladies-watches,ultra-luxury-jewellery,ultra-luxury-cosmetics,ultra-luxury-perfume,ultra-luxury-electronics,ultra-luxury-accessories,ultra-luxury-handbags' | split: ',' %}
 
-  {%- comment -%} Determine collection tier via tags {%- endcomment -%}
-  {%- assign is_ultra_luxury = false -%}
-  {%- assign is_standard = false -%}
-  {%- assign collection_handle = collection.handle -%}
+{% assign is_standard = false %}
+{% assign is_ultra = false %}
 
-  {%- for tag in collection.tags -%}
-    {%- if tag == 'ultra-luxury-collection' or tag == 'ultra-luxury' -%}
-      {%- assign is_ultra_luxury = true -%}
-    {%- endif -%}
-    {%- if tag == 'standard-collection' or tag == 'standard' -%}
-      {%- assign is_standard = true -%}
-    {%- endif -%}
-  {%- endfor -%}
+{% for vc in standard_velvet %}
+  {% if collection.handle == vc %}
+    {% assign is_standard = true %}
+  {% endif %}
+{% endfor %}
 
-  {%- comment -%} Also detect by handle prefix {%- endcomment -%}
-  {%- if collection_handle contains 'ultra-luxury' -%}
-    {%- assign is_ultra_luxury = true -%}
-  {%- endif -%}
+{% for uc in ultra_velvet %}
+  {% if collection.handle == uc %}
+    {% assign is_ultra = true %}
+  {% endif %}
+{% endfor %}
 
-  {%- comment -%} Default to standard if not explicitly ultra-luxury {%- endcomment -%}
-  {%- unless is_ultra_luxury -%}
-    {%- assign is_standard = true -%}
-  {%- endunless -%}
-
-  {%- comment -%} Get timer settings from theme config {%- endcomment -%}
-  {%- assign visit_threshold = settings.velvet_rope_standard_visit_threshold | default: 25 -%}
-  {%- assign standard_min = settings.velvet_rope_standard_min_seconds | default: 90 -%}
-  {%- assign standard_max = settings.velvet_rope_standard_max_seconds | default: 110 -%}
-  {%- assign ultra_min = settings.velvet_rope_ultra_min_seconds | default: 170 -%}
-  {%- assign ultra_max = settings.velvet_rope_ultra_max_seconds | default: 190 -%}
-
-  {%- comment -%} Render the overlay {%- endcomment -%}
-  <div id="velvet-rope-overlay" class="velvet-rope-overlay" role="dialog" aria-modal="true" aria-label="Exclusive Access">
-    <div class="velvet-rope-modal">
-      <button class="velvet-rope__close" id="velvet-rope-close" aria-label="Close">&times;</button>
-
-      <div class="velvet-rope-content">
-        {%- if is_ultra_luxury -%}
-          {%- comment -%} ULTRA-LUXURY TIER {%- endcomment -%}
-          <span class="velvet-rope__icon">👑</span>
-          <div class="velvet-rope__vip-badge">
-            <span>✦</span> VIP Ultra-Luxury Access <span>✦</span>
-          </div>
-          <h2 class="velvet-rope__title">
-            <span class="gold-gradient">Exclusive Collection</span>
-          </h2>
-          <p class="velvet-rope__subtitle">Ultra-Luxury Experience Loading</p>
-          <p class="velvet-rope__message">
-            Welcome to the Dubai Dust Ultra-Luxury Collection. Only the most discerning 
-            clientele gain access to our curated selection of the world's finest products.
-            <br><br>
-            <strong style="color: var(--color-gold);">VIP Viewing Deposit of R250 required</strong>
-            <br>
-            <small style="color: var(--color-text-muted);">(Fully refundable &amp; deducted from your purchase)</small>
-          </p>
-        {%- else -%}
-          {%- comment -%} STANDARD TIER {%- endcomment -%}
-          <span class="velvet-rope__icon">✨</span>
-          <h2 class="velvet-rope__title">
-            <span class="gold-gradient">Preparing Your Experience</span>
-          </h2>
-          <p class="velvet-rope__subtitle">Luxury Within Reach</p>
-          <p class="velvet-rope__message">
-            Welcome to {{ collection.title }}. We're preparing an exclusive 
-            shopping experience just for you. Please wait while we curate 
-            the collection.
-          </p>
-        {%- endif -%}
-
-        {%- comment -%} Countdown Timer {%- endcomment -%}
-        <div class="countdown-timer" id="velvet-countdown">
-          <div class="countdown-unit">
-            <div class="countdown-value" id="vr-minutes">00</div>
-            <span class="countdown-label">Minutes</span>
-          </div>
-          <span class="countdown-separator">:</span>
-          <div class="countdown-unit">
-            <div class="countdown-value" id="vr-seconds">00</div>
-            <span class="countdown-label">Seconds</span>
-          </div>
-        </div>
-
-        {%- comment -%} Progress Bar {%- endcomment -%}
-        <div class="velvet-rope__progress">
-          <div class="velvet-rope__progress-bar" id="vr-progress" style="width: 0%;"></div>
-        </div>
-
-        <p style="font-size: 0.75rem; color: var(--color-text-muted); opacity: 0.6;">
-          {%- if is_ultra_luxury -%}
-            This exclusive access experience ensures quality service for our VIP clientele.
-          {%- else -%}
-            Thank you for your patience. The best things in life are worth waiting for.
-          {%- endif -%}
-        </p>
+{% if is_standard or is_ultra %}
+<div id="velvet-rope-overlay" style="display:none;" data-tier="{{ is_ultra | default: false }}">
+  <div class="velvet-backdrop"></div>
+  <div class="velvet-modal {% if is_ultra %}velvet-ultra{% endif %}">
+    {% if is_ultra %}
+    <!-- Ultra Luxury Tier -->
+    <div class="velvet-crown">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="1.2">
+        <path d="M2 17L5 7L9 12L12 4L15 12L19 7L22 17H2Z" fill="rgba(212,168,83,0.15)"/>
+        <path d="M2 17L5 7L9 12L12 4L15 12L19 7L22 17H2Z"/>
+        <circle cx="5" cy="7" r="1" fill="#d4a853"/>
+        <circle cx="12" cy="4" r="1" fill="#d4a853"/>
+        <circle cx="19" cy="7" r="1" fill="#d4a853"/>
+      </svg>
+    </div>
+    <div class="velvet-ultra-badge">ULTRA LUXURY</div>
+    <h2 class="velvet-title">Private Viewing Room</h2>
+    <p class="velvet-subtitle">{{ collection.title }}</p>
+    <div class="velvet-divider velvet-divider-ultra"></div>
+    <p class="velvet-message">
+      Welcome to the Dubai Dust <span class="velvet-gold">Private Collection</span>.
+      <br>You are guest <span id="velvet-guest-number" class="velvet-gold">3</span> awaiting entry.
+    </p>
+    <div class="velvet-vip-notice">
+      <div class="velvet-vip-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="1.5">
+          <rect x="2" y="6" width="20" height="14" rx="2"/>
+          <path d="M22 10H2"/>
+          <path d="M6 14H10"/>
+        </svg>
+      </div>
+      <p class="velvet-vip-text">
+        A <span class="velvet-gold">once-off R250 VIP viewing deposit</span> applies — pay once, enjoy lifetime access to all Ultra Luxury collections.
+        <br><span style="font-size:11px;opacity:0.7;">Fully redeemable against your purchase. Refunded if you choose not to buy.</span>
+      </p>
+    </div>
+    <div class="velvet-timer-wrap">
+      <div class="velvet-timer-label">Preparing your private viewing</div>
+      <div id="velvet-countdown" class="velvet-countdown">5:00</div>
+      <div class="velvet-progress-track">
+        <div id="velvet-progress-bar" class="velvet-progress-fill velvet-progress-ultra"></div>
       </div>
     </div>
+    <div class="velvet-concierge-notice">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+        <line x1="9" y1="9" x2="9.01" y2="9"/>
+        <line x1="15" y1="9" x2="15.01" y2="9"/>
+      </svg>
+      <span>Your personal AI Shopping Concierge will be available inside</span>
+    </div>
+    <p class="velvet-footnote">Ultra luxury demands patience. The extraordinary awaits.</p>
+
+    {% else %}
+    <!-- Standard Luxury Tier -->
+    <div class="velvet-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="1.5">
+        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+      </svg>
+    </div>
+    <h2 class="velvet-title">Exclusive Collection</h2>
+    <p class="velvet-subtitle">{{ collection.title }}</p>
+    <div class="velvet-divider"></div>
+    <p class="velvet-message">
+      You are guest <span id="velvet-guest-number" class="velvet-gold">6</span> waiting to enter.
+      <br>Please allow our <span class="velvet-gold">5 current customers</span> to conclude their shopping.
+    </p>
+    <div class="velvet-timer-wrap">
+      <div class="velvet-timer-label">Estimated wait time</div>
+      <div id="velvet-countdown" class="velvet-countdown">5:00</div>
+      <div class="velvet-progress-track">
+        <div id="velvet-progress-bar" class="velvet-progress-fill"></div>
+      </div>
+    </div>
+    <p class="velvet-footnote">Thank you for your patience. Luxury is worth the wait.</p>
+    {% endif %}
   </div>
+</div>
 
-  {%- comment -%} Velvet Rope Logic {%- endcomment -%}
-  <script>
-  (function() {
-    'use strict';
-
-    const CONFIG = {
-      collectionHandle: {{ collection_handle | json }},
-      isUltraLuxury: {{ is_ultra_luxury | json }},
-      isStandard: {{ is_standard | json }},
-      visitThreshold: {{ visit_threshold }},
-      standardMinSeconds: {{ standard_min }},
-      standardMaxSeconds: {{ standard_max }},
-      ultraMinSeconds: {{ ultra_min }},
-      ultraMaxSeconds: {{ ultra_max }}
-    };
-
-    const STORAGE_KEY = 'dd_velvet_rope_visits';
-    const UNLOCKED_KEY = 'dd_velvet_rope_unlocked';
-
-    // --- Helper Functions ---
-
-    function getVisitCounts() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      } catch (e) { return {}; }
+<style>
+  .velvet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 7, 15, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 99998;
+  }
+  .velvet-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 99999;
+    background: linear-gradient(145deg, #0d1117 0%, #131920 50%, #0d1117 100%);
+    border: 1px solid rgba(212, 168, 83, 0.3);
+    border-radius: 16px;
+    padding: 48px 40px;
+    max-width: 480px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 0 60px rgba(212, 168, 83, 0.08), 0 0 120px rgba(0,0,0,0.5);
+    animation: velvetFadeIn 0.8s ease;
+  }
+  .velvet-modal.velvet-ultra {
+    max-width: 520px;
+    border: 1px solid rgba(212, 168, 83, 0.5);
+    box-shadow: 0 0 80px rgba(212, 168, 83, 0.15), 0 0 160px rgba(0,0,0,0.6),
+                inset 0 0 60px rgba(212, 168, 83, 0.03);
+    background: linear-gradient(145deg, #0a0d14 0%, #10151d 30%, #0d1219 60%, #0a0d14 100%);
+  }
+  @keyframes velvetFadeIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+  .velvet-icon, .velvet-crown {
+    margin-bottom: 20px;
+    animation: velvetPulse 2s ease-in-out infinite;
+  }
+  @keyframes velvetPulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+  .velvet-ultra-badge {
+    display: inline-block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: #0a0e1a;
+    background: linear-gradient(135deg, #d4a853, #f0d48a, #d4a853);
+    padding: 4px 20px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+  .velvet-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: #d4a853;
+    margin: 0 0 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .velvet-subtitle {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    margin: 0 0 24px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+  }
+  .velvet-divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d4a853, transparent);
+    margin: 0 auto 24px;
+  }
+  .velvet-divider-ultra {
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #d4a853, #f0d48a, #d4a853, transparent);
+  }
+  .velvet-message {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.75);
+    margin: 0 0 24px;
+  }
+  .velvet-gold {
+    color: #d4a853;
+    font-weight: 600;
+  }
+  .velvet-vip-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(212, 168, 83, 0.06);
+    border: 1px solid rgba(212, 168, 83, 0.15);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 24px;
+    text-align: left;
+  }
+  .velvet-vip-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .velvet-vip-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.8);
+    margin: 0;
+  }
+  .velvet-timer-wrap {
+    margin-bottom: 20px;
+  }
+  .velvet-timer-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 8px;
+  }
+  .velvet-countdown {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: #d4a853;
+    margin-bottom: 16px;
+    text-shadow: 0 0 20px rgba(212, 168, 83, 0.3);
+  }
+  .velvet-progress-track {
+    width: 100%;
+    height: 3px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .velvet-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #d4a853, #f0d48a);
+    border-radius: 3px;
+    transition: width 1s linear;
+  }
+  .velvet-progress-ultra {
+    background: linear-gradient(90deg, #b8860b, #d4a853, #f0d48a, #d4a853);
+    background-size: 200% 100%;
+    animation: shimmerGold 3s ease infinite;
+  }
+  @keyframes shimmerGold {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .velvet-concierge-notice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    color: rgba(212, 168, 83, 0.7);
+    letter-spacing: 0.5px;
+  }
+  .velvet-footnote {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+    font-style: italic;
+    margin: 0;
+  }
+  @media (max-width: 480px) {
+    .velvet-modal {
+      padding: 36px 24px;
     }
-
-    function setVisitCounts(counts) {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(counts));
-      } catch (e) {}
+    .velvet-title {
+      font-size: 22px;
     }
-
-    function getUnlocked() {
-      try {
-        const data = JSON.parse(localStorage.getItem(UNLOCKED_KEY) || '{}');
-        const handle = CONFIG.collectionHandle;
-        // Unlock expires after 30 minutes (session-based)
-        if (data[handle] && (Date.now() - data[handle]) < 30 * 60 * 1000) {
-          return true;
-        }
-        return false;
-      } catch (e) { return false; }
+    .velvet-countdown {
+      font-size: 36px;
     }
-
-    function setUnlocked() {
-      try {
-        const data = JSON.parse(localStorage.getItem(UNLOCKED_KEY) || '{}');
-        data[CONFIG.collectionHandle] = Date.now();
-        localStorage.setItem(UNLOCKED_KEY, JSON.stringify(data));
-      } catch (e) {}
+    .velvet-vip-notice {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
     }
+  }
+</style>
 
-    function getRandomDuration(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+<script>
+(function() {
+  var IS_ULTRA = {{ is_ultra }};
+  var COLLECTION = '{{ collection.handle }}';
+  var overlay = document.getElementById('velvet-rope-overlay');
+  if (!overlay) return;
 
-    // --- Determine if timer should show ---
+  if (IS_ULTRA) {
+    // Ultra Luxury: show on EVERY visit, wait ~180 seconds
+    overlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
 
-    function shouldShowTimer() {
-      // If already unlocked in this session, skip
-      if (getUnlocked()) return false;
+    var guestNum = Math.floor(Math.random() * 3) + 2; // 2-4 guests (exclusive)
+    var guestEl = document.getElementById('velvet-guest-number');
+    if (guestEl) guestEl.textContent = guestNum;
 
-      const counts = getVisitCounts();
-      const handle = CONFIG.collectionHandle;
-      counts[handle] = (counts[handle] || 0) + 1;
-      setVisitCounts(counts);
+    var totalWait = Math.floor(Math.random() * 21) + 170; // 170-190 seconds (~3 min)
+    var elapsed = 0;
+    var displayTotal = 300;
+    var countdownEl = document.getElementById('velvet-countdown');
+    var progressBar = document.getElementById('velvet-progress-bar');
 
-      if (CONFIG.isUltraLuxury) {
-        // Ultra-luxury: show on EVERY visit
-        return true;
+    var timer = setInterval(function() {
+      elapsed++;
+      var ratio = elapsed / totalWait;
+      var displayRemaining = Math.max(0, Math.ceil(displayTotal * (1 - ratio)));
+      var mins = Math.floor(displayRemaining / 60);
+      var secs = displayRemaining % 60;
+      if (countdownEl) countdownEl.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+      if (progressBar) progressBar.style.width = (ratio * 100) + '%';
+
+      if (elapsed >= totalWait) {
+        clearInterval(timer);
+        if (countdownEl) countdownEl.textContent = '0:00';
+        if (progressBar) progressBar.style.width = '100%';
+        overlay.style.transition = 'opacity 0.8s ease';
+        overlay.style.opacity = '0';
+        setTimeout(function() {
+          overlay.style.display = 'none';
+          document.body.style.overflow = '';
+        }, 800);
       }
+    }, 1000);
 
-      if (CONFIG.isStandard) {
-        // Standard: show every Nth visit
-        return (counts[handle] % CONFIG.visitThreshold === 0);
+  } else {
+    // Standard Luxury: trigger every 25th visit, ~90-110s wait
+    var TRIGGER_EVERY = 25;
+    var storageKey = 'dd_vr_' + COLLECTION;
+    var visits = parseInt(localStorage.getItem(storageKey) || '0', 10);
+    visits++;
+    localStorage.setItem(storageKey, visits.toString());
+
+    if (visits % TRIGGER_EVERY !== 0) return;
+
+    overlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+
+    var guestNum = Math.floor(Math.random() * 5) + 5;
+    var guestEl = document.getElementById('velvet-guest-number');
+    if (guestEl) guestEl.textContent = guestNum;
+
+    var totalWait = Math.floor(Math.random() * 21) + 90;
+    var elapsed = 0;
+    var displayTotal = 300;
+    var countdownEl = document.getElementById('velvet-countdown');
+    var progressBar = document.getElementById('velvet-progress-bar');
+
+    var timer = setInterval(function() {
+      elapsed++;
+      var ratio = elapsed / totalWait;
+      var displayRemaining = Math.max(0, Math.ceil(displayTotal * (1 - ratio)));
+      var mins = Math.floor(displayRemaining / 60);
+      var secs = displayRemaining % 60;
+      if (countdownEl) countdownEl.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+      if (progressBar) progressBar.style.width = (ratio * 100) + '%';
+
+      if (elapsed >= totalWait) {
+        clearInterval(timer);
+        if (countdownEl) countdownEl.textContent = '0:00';
+        if (progressBar) progressBar.style.width = '100%';
+        overlay.style.transition = 'opacity 0.8s ease';
+        overlay.style.opacity = '0';
+        setTimeout(function() {
+          overlay.style.display = 'none';
+          document.body.style.overflow = '';
+        }, 800);
       }
-
-      return false;
-    }
-
-    // --- Timer Logic ---
-
-    function startCountdown(totalSeconds) {
-      const overlay = document.getElementById('velvet-rope-overlay');
-      const minutesEl = document.getElementById('vr-minutes');
-      const secondsEl = document.getElementById('vr-seconds');
-      const progressBar = document.getElementById('vr-progress');
-      const closeBtn = document.getElementById('velvet-rope-close');
-
-      if (!overlay) return;
-
-      // Show overlay
-      overlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-
-      let remaining = totalSeconds;
-
-      function updateDisplay() {
-        const mins = Math.floor(remaining / 60);
-        const secs = remaining % 60;
-        if (minutesEl) minutesEl.textContent = String(mins).padStart(2, '0');
-        if (secondsEl) secondsEl.textContent = String(secs).padStart(2, '0');
-
-        const progress = ((totalSeconds - remaining) / totalSeconds) * 100;
-        if (progressBar) progressBar.style.width = progress + '%';
-      }
-
-      updateDisplay();
-
-      const interval = setInterval(function() {
-        remaining--;
-        updateDisplay();
-
-        if (remaining <= 0) {
-          clearInterval(interval);
-          // Timer complete — unlock collection
-          closeOverlay();
-          setUnlocked();
-
-          if (window.DubaiDust && window.DubaiDust.showToast) {
-            window.DubaiDust.showToast('✨', 'Collection unlocked! Enjoy your exclusive shopping experience.');
-          }
-        }
-      }, 1000);
-
-      // Close / dismiss functionality
-      // For standard: allow close after 50% of time
-      // For ultra-luxury: must wait full timer
-      if (closeBtn) {
-        if (CONFIG.isUltraLuxury) {
-          closeBtn.style.display = 'none';
-        } else {
-          closeBtn.style.display = 'none';
-          // Show close after 50% of timer
-          setTimeout(function() {
-            closeBtn.style.display = 'flex';
-          }, (totalSeconds * 500)); // 50% of total in ms
-        }
-
-        closeBtn.addEventListener('click', function() {
-          clearInterval(interval);
-          closeOverlay();
-          setUnlocked();
-        });
-      }
-
-      function closeOverlay() {
-        overlay.classList.remove('active');
-        document.body.style.overflow = '';
-      }
-    }
-
-    // --- Initialize ---
-
-    if (shouldShowTimer()) {
-      let duration;
-      if (CONFIG.isUltraLuxury) {
-        duration = getRandomDuration(CONFIG.ultraMinSeconds, CONFIG.ultraMaxSeconds);
-      } else {
-        duration = getRandomDuration(CONFIG.standardMinSeconds, CONFIG.standardMaxSeconds);
-      }
-
-      // Small delay for page to settle
-      setTimeout(function() {
-        startCountdown(duration);
-      }, 500);
-    }
-
-  })();
-  </script>
-
-{%- endif -%}
+    }, 1000);
+  }
+})();
+</script>
+{% endif %}
