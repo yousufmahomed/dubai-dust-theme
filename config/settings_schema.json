@@ -1,1 +1,68 @@
-[]
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Dubai Dust",
+    "theme_version": "1.0.0",
+    "theme_author": "Dubai Dust",
+    "theme_documentation_url": "https://dubaidust.org",
+    "theme_support_url": "mailto:support@dubaidust.org"
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "color_scheme_group",
+        "id": "color_schemes",
+        "definition": [
+          {
+            "type": "color",
+            "id": "background",
+            "label": "Background",
+            "info": "Background color"
+          },
+          {
+            "type": "color",
+            "id": "text",
+            "label": "Text",
+            "info": "Text color"
+          },
+          {
+            "type": "color",
+            "id": "button",
+            "label": "Button background"
+          },
+          {
+            "type": "color",
+            "id": "button_label",
+            "label": "Button text"
+          },
+          {
+            "type": "color",
+            "id": "secondary_button_label",
+            "label": "Secondary button text"
+          },
+          {
+            "type": "color_background",
+            "id": "background_gradient",
+            "label": "Background gradient"
+          }
+        ],
+        "role": {
+          "text": "text",
+          "background": {
+            "solid": "background",
+            "gradient": "background_gradient"
+          },
+          "links": "secondary_button_label",
+          "icons": "text",
+          "primary_button": "button",
+          "on_primary_button": "button_label",
+          "primary_button_border": "button",
+          "secondary_button": "background",
+          "on_secondary_button": "secondary_button_label",
+          "secondary_button_border": "secondary_button_label"
+        }
+      }
+    ]
+  }
+]
