@@ -315,6 +315,72 @@ The theme is mobile-first responsive:
 - [ ] Remove Shopify password page
 - [ ] Test on mobile devices
 
+- [ ] Verify AI Shopping Concierge chatbot widget loads and is styled correctly
+
+---
+
+## 🤖 AI Shopping Concierge (Chatbot Widget)
+
+The theme includes an embedded **Dubai Dust AI Shopping Concierge** powered by Abacus.AI. It appears as a gold chat bubble in the bottom-right corner of every page.
+
+### How It Works
+
+| File | Purpose |
+|---|---|
+| `layout/theme.liquid` | Loads the widget SDK script and custom CSS/JS |
+| `assets/chatbot-widget-custom.css` | Luxury styling overrides for the widget |
+| `assets/chatbot-widget-init.js` | Initialisation, positioning, tooltips, and responsive behaviour |
+
+### Widget Details
+
+- **App ID**: `101eeb881c`
+- **SDK URL**: `https://api.abacus.ai/api/v0/getChatBotWidgetSDKLink?externalApplicationId=101eeb881c`
+- **Public Chat URL**: `https://apps.abacus.ai/chatllm/?appId=101eeb881c&hideTopBar=2`
+
+### Loading Order (in `theme.liquid`)
+
+1. `chatbot-widget-custom.css` — loaded in `<head>` after `theme.css`
+2. Abacus.AI Widget SDK `<script>` — loaded before `</body>` with `defer`
+3. `chatbot-widget-init.js` — loaded after the SDK with `defer`
+
+### Styling Customisations Applied
+
+| Element | Style |
+|---|---|
+| Chat bubble | Gold gradient (`#d4a853`→`#c49b45`) with pulse glow animation |
+| Chat window | Dark background (`#0a0e1a`) with subtle gold border |
+| Header | Darker background with decorative gold divider line |
+| User messages | Gold gradient background with dark text |
+| Bot messages | Translucent dark with gold-accent border |
+| Input area | Dark with gold-border focus ring |
+| Send button | Gold gradient matching the bubble |
+| Typography | Montserrat body, Playfair Display header |
+| Scrollbar | Thin gold-tinted scrollbar |
+| Decorative | Arabian star (✦) and diamond (◆) accents |
+
+### Mobile Responsiveness
+
+- **≤ 768 px** — Bubble shrinks to 56 px; chat window stretches near full-width.
+- **≤ 480 px** — Chat window goes full-width, bottom-docked with rounded top corners.
+- **Touch devices** — Minimum 48 px touch targets on bubble and send button.
+
+### Changing the Welcome Tooltip
+
+Edit `assets/chatbot-widget-init.js` and update the `tip.textContent` value inside the `showWelcomeTooltip` function.
+
+### Changing Widget Colours
+
+Edit `assets/chatbot-widget-custom.css`. The main brand tokens to search/replace:
+
+- **Gold**: `#d4a853` / `rgba(212, 168, 83, …)`
+- **Dark background**: `#0a0e1a`
+- **Header background**: `#0d1225`
+- **Text**: `#f5f0e8`
+
+### Replacing the Chatbot
+
+To swap for a different Abacus.AI chatbot, update the `externalApplicationId` query parameter in the SDK `<script>` tag inside `layout/theme.liquid`.
+
 ---
 
 ## 📧 Support

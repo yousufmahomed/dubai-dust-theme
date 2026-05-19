@@ -33,6 +33,9 @@
   {%- comment -%} Theme CSS {%- endcomment -%}
   {{ 'theme.css' | asset_url | stylesheet_tag }}
 
+  {%- comment -%} Dubai Dust AI Shopping Concierge — Custom Widget Styles {%- endcomment -%}
+  {{ 'chatbot-widget-custom.css' | asset_url | stylesheet_tag }}
+
   {%- comment -%} Shopify Required {%- endcomment -%}
   {{ content_for_header }}
 
@@ -111,5 +114,12 @@
   {%- if template.name == 'cart' or request.page_type == 'cart' -%}
     <script src="{{ 'checkout-discount.js' | asset_url }}" defer></script>
   {%- endif -%}
+
+  {%- comment -%} ═══════════════════════════════════════════════════════════
+       Dubai Dust AI Shopping Concierge — Chat Widget
+       SDK loaded first, then custom initialisation script.
+     ═══════════════════════════════════════════════════════════ {%- endcomment -%}
+  <script src="https://api.abacus.ai/api/v0/getChatBotWidgetSDKLink?externalApplicationId=101eeb881c" defer></script>
+  <script src="{{ 'chatbot-widget-init.js' | asset_url }}" defer></script>
 </body>
 </html>
