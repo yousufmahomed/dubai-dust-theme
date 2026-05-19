@@ -3829,3 +3829,48 @@ h1, h2 {
 
 html { scroll-behavior: smooth; }
 
+/* ═══ Shrink oversized Shopify placeholder SVGs (arrows/chevrons) ═══ */
+.collection-list__item .placeholder-svg,
+.collection-card .placeholder-svg,
+.card--collection .placeholder-svg,
+.card .placeholder-svg,
+.collection-card__image .placeholder-svg,
+.media--square .placeholder-svg,
+.media--portrait .placeholder-svg,
+.media--landscape .placeholder-svg,
+.media--adapt .placeholder-svg,
+.collection-hero .placeholder-svg,
+.card--standard .placeholder-svg {
+  width: 15% !important;
+  height: auto !important;
+  max-width: 60px !important;
+  opacity: 0.25 !important;
+  margin: auto !important;
+}
+
+/* Centre placeholder inside its container */
+.collection-list__item .media,
+.collection-card .media,
+.card--collection .media,
+.card .media {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #111827 !important;
+}
+
+/* Also shrink the generic placeholder wrapper */
+.placeholder {
+  max-height: 180px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #111827 !important;
+}
+.placeholder .placeholder-svg {
+  width: 15% !important;
+  height: auto !important;
+  max-width: 60px !important;
+  opacity: 0.25 !important;
+}
+
