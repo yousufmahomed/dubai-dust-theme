@@ -1,0 +1,20 @@
+{
+  "name": "dubai-dust-ultra-luxury-email-webhook",
+  "version": "1.0.0",
+  "description": "Shopify order webhook handler — sends handwritten-style thank-you emails for Dubai Dust ultra-luxury orders",
+  "main": "order-webhook-handler.js",
+  "scripts": {
+    "start": "node order-webhook-handler.js",
+    "dev": "NODE_ENV=development node order-webhook-handler.js",
+    "preview": "curl -s -X POST http://localhost:3500/test/send-email -H 'Content-Type: application/json' -d '{\"preview\": true}' -o ../email-templates/preview.html && open ../email-templates/preview.html"
+  },
+  "dependencies": {
+    "express": "^4.18.0",
+    "node-fetch": "^3.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
