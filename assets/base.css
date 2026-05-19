@@ -3829,18 +3829,37 @@ h1, h2 {
 
 html { scroll-behavior: smooth; }
 
-/* ═══ Shrink oversized Shopify placeholder SVGs (arrows/chevrons) ═══ */
-.collection-list__item .placeholder-svg,
-.collection-card .placeholder-svg,
-.card--collection .placeholder-svg,
-.card .placeholder-svg,
-.collection-card__image .placeholder-svg,
-.media--square .placeholder-svg,
-.media--portrait .placeholder-svg,
-.media--landscape .placeholder-svg,
-.media--adapt .placeholder-svg,
-.collection-hero .placeholder-svg,
-.card--standard .placeholder-svg {
+/* ═══ Fix oversized arrow icons in collection cards ═══ */
+svg.icon-arrow,
+.icon-wrap svg.icon-arrow,
+.icon-wrap .icon-arrow {
+  width: 20px !important;
+  height: 14px !important;
+  max-width: 20px !important;
+  max-height: 14px !important;
+}
+.icon-wrap {
+  width: 24px !important;
+  height: 24px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+/* Make collection images visible (they load at width:0) */
+.section-collection-list img,
+.collection-list__item img,
+.card--collection img,
+.card--standard img.motion-reduce {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* Shrink generic placeholder SVGs too */
+.placeholder-svg,
+.placeholder svg {
   width: 15% !important;
   height: auto !important;
   max-width: 60px !important;
@@ -3848,29 +3867,24 @@ html { scroll-behavior: smooth; }
   margin: auto !important;
 }
 
-/* Centre placeholder inside its container */
-.collection-list__item .media,
-.collection-card .media,
-.card--collection .media,
-.card .media {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  background: #111827 !important;
+/* Force dark bg on all sections */
+.shopify-section section,
+.shopify-section .collection-list-wrapper,
+.section-collection-list,
+.collection-list-wrapper {
+  background-color: #0a0e1a !important;
 }
 
-/* Also shrink the generic placeholder wrapper */
-.placeholder {
-  max-height: 180px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  background: #111827 !important;
+/* Ensure all section text is visible on dark */
+.shopify-section h2,
+.shopify-section h3,
+.shopify-section .collection-list-title,
+.title, .title--primary {
+  color: #d4a853 !important;
 }
-.placeholder .placeholder-svg {
-  width: 15% !important;
-  height: auto !important;
-  max-width: 60px !important;
-  opacity: 0.25 !important;
+.shopify-section p,
+.shopify-section .rte,
+.shopify-section .collection-card__description {
+  color: #e0e0e0 !important;
 }
 
